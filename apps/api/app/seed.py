@@ -7,6 +7,7 @@ Usage:
 """
 
 import sys
+from datetime import UTC, datetime, timedelta
 
 from sqlalchemy.orm import Session
 
@@ -24,34 +25,23 @@ DEMO_USERS = [
 ]
 
 DEMO_BOARDS = [
-    {"title": "Mark's Kanban", "description": "My personal tasks and projects", "owner_index": 2},
-    {"title": "John's Kanban", "description": "My personal tasks and projects", "owner_index": 0},
-    {"title": "Jane's Kanban", "description": "My personal tasks and projects", "owner_index": 1},
-    {"title": "Dev Team Board", "description": "public board for Dev Team", "owner_index": 0},
+    {"title": "Mark's Kanban", "description": "My personal tasks and projects"},
+    {"title": "John's Kanban", "description": "My personal tasks and projects"},
+    {"title": "Jane's Kanban", "description": "My personal tasks and projects"},
+    {"title": "Dev Team Board", "description": "public board for Dev Team"},
 ]
 
 DEMO_PROJECTS = [
-    {"title": "Mark's todo list", "description": "This is demo project 1", "board_index": 0},
-    {"title": "Demo Project 2", "description": "This is demo project 2", "board_index": 3},
-    {"title": "Demo Project 3", "description": "This is demo project 3", "board_index": 3},
+    {"title": "Mark's todo list", "description": "This is demo project 1"},
+    {"title": "Demo Project 2", "description": "This is demo project 2"},
+    {"title": "Demo Project 3", "description": "This is demo project 3"},
 ]
 
 DEMO_TASKS = [
-    {
-        "title": "Task 1",
-        "description": "This is my first task",
-        "status": "TODO",
-        "project_index": 0,
-    },
-    {
-        "title": "Task 2",
-        "description": "This is task 2",
-        "status": "IN_PROGRESS",
-        "project_index": 0,
-    },
-    {"title": "Task 3", "description": "This is task 3", "status": "DONE", "project_index": 1},
+    {"title": "Task 1", "description": "This is my first task", "status": "TODO"},
+    {"title": "Task 2", "description": "This is task 2", "status": "IN_PROGRESS"},
+    {"title": "Task 3", "description": "This is task 3", "status": "DONE"},
 ]
-
 
 # ---------------------------------------------------------------------------
 # Seed logic
@@ -69,12 +59,20 @@ def seed(force: bool = False):
 
         if force and existing:
             print("Dropping existing demo data...")
-            # owner_id has no ON DELETE CASCADE, so drop owned boards
-            # (cascades to projects/tasks) before deleting the users.
+            # owner_id has no ON DELETE CASCADE, so drop tasks, then boards, then users.
             demo_emails = {u["email"] for u in DEMO_USERS}
             users = db.query(User).filter(User.email.in_(demo_emails)).all()
             user_ids = [u.id for u in users]
+
             boards = db.query(Board).filter(Board.owner_id.in_(user_ids)).all()
+            board_ids = [b.id for b in boards]
+
+            if board_ids:
+                tasks = db.query(Task).filter(Task.board_id.in_(board_ids)).all()
+                for t in tasks:
+                    db.delete(t)
+                db.flush()
+
             for b in boards:
                 db.delete(b)
             db.flush()
@@ -91,54 +89,111 @@ def seed(force: bool = False):
         db.flush()
 
         print("Seeding demo boards...")
-        boards = []
-        for data in DEMO_BOARDS:
-            owner = users[data["owner_index"]]
-            b = Board(
-                title=data["title"],
-                description=data["description"],
-                owner_id=owner.id,
-                members=[owner],
-            )
-            db.add(b)
-            boards.append(b)
+        boards = [
+            Board(
+                title=DEMO_BOARDS[0]["title"],
+                description=DEMO_BOARDS[0]["description"],
+                owner_id=users[2].id,
+                members=[users[2]],
+            ),
+            Board(
+                title=DEMO_BOARDS[1]["title"],
+                description=DEMO_BOARDS[1]["description"],
+                owner_id=users[0].id,
+                members=[users[0]],
+            ),
+            Board(
+                title=DEMO_BOARDS[2]["title"],
+                description=DEMO_BOARDS[2]["description"],
+                owner_id=users[1].id,
+                members=[users[1]],
+            ),
+            Board(
+                title=DEMO_BOARDS[3]["title"],
+                description=DEMO_BOARDS[3]["description"],
+                owner_id=users[1].id,
+                members=[users[0], users[1], users[2]],
+            ),
+        ]
+        db.add_all(boards)
         db.flush()
 
         print("Seeding demo projects...")
-        projects = []
-        for i, data in enumerate(DEMO_PROJECTS):
-            board = boards[data["board_index"]]
-            owner = board.owner
-            p = Project(
-                title=data["title"],
-                description=data["description"],
-                owner_id=owner.id,
-                board_id=board.id,
-                order_in_board=i,
+        projects = [
+            Project(
+                title=DEMO_PROJECTS[0]["title"],
+                description=DEMO_PROJECTS[0]["description"],
+                owner_id=users[2].id,
+                board_id=boards[0].id,
+                order_in_board=0,
                 status="TODO",
-                members=[owner],
-            )
-            db.add(p)
-            projects.append(p)
+                members=[users[2]],
+            ),
+            Project(
+                title=DEMO_PROJECTS[1]["title"],
+                description=DEMO_PROJECTS[1]["description"],
+                owner_id=users[0].id,
+                board_id=boards[3].id,
+                order_in_board=0,
+                status="TODO",
+                members=[users[0], users[2]],
+            ),
+            Project(
+                title=DEMO_PROJECTS[2]["title"],
+                description=DEMO_PROJECTS[2]["description"],
+                owner_id=users[1].id,
+                board_id=boards[3].id,
+                order_in_board=1,
+                status="TODO",
+                members=[users[1], users[2]],
+            ),
+        ]
+        db.add_all(projects)
         db.flush()
 
         print("Seeding demo tasks...")
-        for i, data in enumerate(DEMO_TASKS):
-            project = projects[data["project_index"]]
-            owner_id = project.owner_id
-            t = Task(
-                title=data["title"],
-                description=data["description"],
-                status=data["status"],
-                order_in_project=i,
-                board_id=project.board_id,
-                project_id=project.id,
-                creator_id=owner_id,
-                last_modifier_id=owner_id,
-            )
-            db.add(t)
-
+        now = datetime.now(UTC)
+        tasks = [
+            Task(
+                title=DEMO_TASKS[0]["title"],
+                description=DEMO_TASKS[0]["description"],
+                status=DEMO_TASKS[0]["status"],
+                order_in_project=0,
+                board_id=boards[0].id,
+                project_id=projects[0].id,
+                creator_id=users[2].id,
+                assignee_id=users[2].id,
+                last_modifier_id=users[2].id,
+                due_date=now + timedelta(days=2),
+            ),
+            Task(
+                title=DEMO_TASKS[1]["title"],
+                description=DEMO_TASKS[1]["description"],
+                status=DEMO_TASKS[1]["status"],
+                order_in_project=0,
+                board_id=boards[1].id,
+                project_id=projects[1].id,
+                creator_id=users[1].id,
+                assignee_id=users[2].id,
+                last_modifier_id=users[1].id,
+                due_date=now + timedelta(days=5),
+            ),
+            Task(
+                title=DEMO_TASKS[2]["title"],
+                description=DEMO_TASKS[2]["description"],
+                status=DEMO_TASKS[2]["status"],
+                order_in_project=0,
+                board_id=boards[2].id,
+                project_id=projects[2].id,
+                creator_id=users[0].id,
+                assignee_id=users[1].id,
+                last_modifier_id=users[1].id,
+                due_date=now + timedelta(days=3),
+            ),
+        ]
+        db.add_all(tasks)
         db.commit()
+
         print("Done! Demo data seeded successfully.")
         print(f"  Users: {len(DEMO_USERS)}")
         print(f"  Boards: {len(DEMO_BOARDS)}")

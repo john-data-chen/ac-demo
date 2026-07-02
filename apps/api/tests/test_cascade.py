@@ -2,29 +2,7 @@
 
 import uuid
 
-import pytest
-from sqlalchemy import create_engine
-from sqlalchemy.orm import Session
-
-from app.database import Base
 from app.models import Board, Project, Task, User
-
-TEST_DB_URL = "postgresql+psycopg://root:123456@localhost:5432/task_manager"
-
-
-@pytest.fixture(scope="module")
-def engine():
-    eng = create_engine(TEST_DB_URL)
-    Base.metadata.create_all(eng)
-    yield eng
-    Base.metadata.drop_all(eng)
-
-
-@pytest.fixture
-def db(engine):
-    with Session(engine) as session:
-        yield session
-        session.rollback()
 
 
 def test_cascade_board_delete(db):

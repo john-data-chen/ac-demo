@@ -65,14 +65,6 @@ class LoginBody(BaseModel):
     email: str
 
 
-class UserOut(BaseModel):
-    id: str
-    email: str
-    name: str
-
-    model_config = {"from_attributes": True}
-
-
 # ---------------------------------------------------------------------------
 # Routes
 # ---------------------------------------------------------------------------

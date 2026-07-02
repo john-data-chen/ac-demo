@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 from app.auth import get_current_user
 from app.database import get_db
 from app.models import Board, User
+from app.serializers import user_ref as _user_ref
 
 router = APIRouter(prefix="/boards", tags=["boards"])
 
@@ -16,12 +17,6 @@ router = APIRouter(prefix="/boards", tags=["boards"])
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
-
-
-def _user_ref(u: User | None) -> dict | None:
-    if not u:
-        return None
-    return {"_id": str(u.id), "name": u.name, "email": u.email}
 
 
 def _board_out(b: Board) -> dict:

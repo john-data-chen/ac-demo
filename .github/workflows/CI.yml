@@ -33,14 +33,14 @@ jobs:
           node-version: 24.x
           cache: "pnpm"
 
-      - name: Install dependencies
-        run: pnpm install
-
       - name: Install uv
         uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
           cache-dependency-glob: "apps/api/uv.lock"
+
+      - name: Install dependencies
+        run: pnpm install
 
       - name: Run Unit Tests
         # highlight-start

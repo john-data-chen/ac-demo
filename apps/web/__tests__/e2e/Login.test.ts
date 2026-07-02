@@ -140,7 +140,7 @@ test.describe.serial("SignInPage", () => {
       await expect(async () => {
         await page.fill('input[name="email"]', defaultEmail);
         await page.click('button[type="submit"]');
-        await page.waitForURL(/^http:\/\/localhost:3000\/en\/boards(\?.*)?$/, {
+        await page.waitForURL(/^http:\/\/localhost:\d+\/en\/boards(\?.*)?$/, {
           timeout: 5000,
           waitUntil: "domcontentloaded"
         });

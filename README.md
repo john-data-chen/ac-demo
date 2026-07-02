@@ -1,19 +1,8 @@
-# Full-Stack Multi-Platform Monorepo with AI-Assisted Development: Next.js + Nest.js + React Native (Expo)
+# Full-Stack Multi-Platform Monorepo with AI-Assisted Development: Next.js + FastAPI + React Native (Expo)
 
-[![codecov](https://codecov.io/gh/john-data-chen/turborepo-starter-kit/graph/badge.svg?token=WvGIkvgW39)](https://codecov.io/gh/john-data-chen/turborepo-starter-kit)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=john-data-chen_turborepo-starter-kit&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=john-data-chen_turborepo-starter-kit)
-[![CI](https://github.com/john-data-chen/turborepo-starter-kit/actions/workflows/CI.yml/badge.svg)](https://github.com/john-data-chen/turborepo-starter-kit/actions/workflows/CI.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 > A production-grade multi-platform monorepo demonstrating shared business logic across Web and Mobile. Built with a write-once approach for state management, validation, and types — while each platform retains full control over its UI and navigation. Showcases engineering practices, decision-making and AI-assisted optimization for senior full-stack roles.
-
-## Another Project
-
-### [Ultra Light Monorepo](https://github.com/john-data-chen/ultra-light-monorepo)
-
-Multi-user online ledger. Hono API backend + SvelteKit frontend. Turborepo architecture.
-Demonstrate framework agility. Switch frameworks easy. AI accelerate development.
-AI produce high-quality project fast. Achieve 95% test coverage. Implement Vercel Remote Cache.
 
 ## Architecture & Engineering Decisions
 
@@ -23,18 +12,18 @@ AI produce high-quality project fast. Achieve 95% test coverage. Implement Verce
 | :---------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------: |
 | <img src="./apps/web/public/assets/Screen_Recording.gif" alt="Web demo recording" width="270" height="579"> | <img src="./apps/mobile/assets/images/simulator-screenshot.png" alt="Mobile simulator screenshot" width="270" height="579"> |
 
-A production-grade Kanban application demonstrating monorepo architecture, test-driven development, and modern tooling practices. Originally built as a monolithic Next.js app ([next-dnd-starter-kit](https://github.com/john-data-chen/next-dnd-starter-kit)), then strategically re-architected to a decoupled frontend/backend system, and now expanded to a **multi-platform solution** with shared business logic across Web and Mobile by AI-assisted development.
+A production-grade Kanban application demonstrating monorepo architecture, test-driven development, and modern tooling practices. Originally built as a TypeScript Turborepo ([turborepo-starter-kit](https://github.com/john-data-chen/turborepo-starter-kit)), then strategically re-architected to a decoupled frontend/backend system, and now expanded to a **multi-platform solution** with shared business logic across Web and Mobile by AI-assisted development.
 
 ### Architectural Evolution
 
-| Aspect                | Before (Monolithic)                        | After (Decoupled Monorepo)                                            | Now (Multi-Platform)                                                | Trade-off Reasoning                                     |
-| --------------------- | ------------------------------------------ | --------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------- |
-| **Team Structure**    | Full-stack developers required             | Specialized Frontend & Backend Teams                                  | **+ Mobile Team with shared domain knowledge**                      | Teams share types/state; onboard faster via shared code |
-| **Development Cycle** | Tightly coupled; one change can impact all | Independent development cycles                                        | **Web & Mobile iterate independently on shared foundations**        | Platform teams move at their own pace                   |
-| **Deployment**        | Single, monolithic deployment              | Independent Frontend/Backend deployment                               | **+ OTA updates for Mobile via Expo**                               | Three independent release channels                      |
-| **Scalability**       | Vertical scaling of the entire app         | Targeted horizontal scaling (e.g., scale only the API service)        | **Same API serves Web & Mobile clients**                            | Single backend; multiple frontends                      |
-| **Technology Stack**  | Locked into Next.js for backend            | Flexible backend choice (Nest.js); can add more services (Go, Python) | **+ React Native (Expo) with NativeWind**                           | Best tool per platform; shared logic layer              |
-| **Code Reusability**  | Limited to the Next.js app                 | Centralized `ui` & `config` packages                                  | **+ Shared `store` and `i18n` packages (types, state, validation)** | Write once for logic; platform-specific for UI          |
+| Aspect                | Before (Monolithic)                        | After (Decoupled Monorepo)                                     | Now (Multi-Platform)                                                | Trade-off Reasoning                                     |
+| --------------------- | ------------------------------------------ | -------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------- |
+| **Team Structure**    | Full-stack developers required             | Specialized Frontend & Backend Teams                           | **+ Mobile Team with shared domain knowledge**                      | Teams share types/state; onboard faster via shared code |
+| **Development Cycle** | Tightly coupled; one change can impact all | Independent development cycles                                 | **Web & Mobile iterate independently on shared foundations**        | Platform teams move at their own pace                   |
+| **Deployment**        | Single, monolithic deployment              | Independent Frontend/Backend deployment                        | **+ OTA updates for Mobile via Expo**                               | Three independent release channels                      |
+| **Scalability**       | Vertical scaling of the entire app         | Targeted horizontal scaling (e.g., scale only the API service) | **Same API serves Web & Mobile clients**                            | Single backend; multiple frontends                      |
+| **Technology Stack**  | Locked into Next.js for backend            | Flexible backend choice (FastAPI); can add more services       | **+ React Native (Expo) with NativeWind**                           | Best tool per platform; shared logic layer              |
+| **Code Reusability**  | Limited to the Next.js app                 | Centralized `ui` & `config` packages                           | **+ Shared `store` and `i18n` packages (types, state, validation)** | Write once for logic; platform-specific for UI          |
 
 ### Code Sharing Strategy
 
@@ -49,13 +38,12 @@ The monorepo shares business logic across platforms while keeping UI and navigat
 │  ├── Zustand Stores  ├── de.json     └── Storybook    configs    │
 │  └── Storage Adapter └── Locale                                  │
 │       (injectable)       config                                  │
-├───────────────────┬──────────────────┬───────────────────────────┤
 │    apps/web       │   apps/mobile    │   apps/api                │
-│    Next.js        │   Expo latest    │   Nest.js                 │
-│    App Router     │   Expo Router    │   Express                 │
-│    Tailwind CSS   │   Nativewind     │   Rspack                  │
-│    localStorage   │   SecureStore    │   MongoDB                 │
-│    next-intl      │   i18next        │   EventEmitter2           │
+│    Next.js        │   Expo latest    │   FastAPI (Python)        │
+│    App Router     │   Expo Router    │   SQLAlchemy              │
+│    Tailwind CSS   │   Nativewind     │   PostgreSQL              │
+│    localStorage   │   SecureStore    │                           │
+│    next-intl      │   i18next        │                           │
 └───────────────────┴──────────────────┴───────────────────────────┘
 ```
 
@@ -114,7 +102,6 @@ The monorepo shares business logic across platforms while keeping UI and navigat
 | Framework | Next.js (App Router)     | Cache Components (PPR) for mixed static/dynamic content |
 | State     | Zustand (shared)         | 40% less boilerplate than Redux, simpler testing        |
 | Forms     | React Hook Form + Zod    | Type-safe validation, composable schemas                |
-| Database  | MongoDB + Mongoose       | Document model fits board/project/task hierarchy        |
 | DnD       | dnd-kit                  | Lightweight, accessible, extensible                     |
 | i18n      | next-intl                | App Router native support, auto locale routing          |
 | UI        | Tailwind CSS + Shadcn/ui | Consistent design system, rapid iteration               |
@@ -136,22 +123,22 @@ The monorepo shares business logic across platforms while keeping UI and navigat
 
 ### Backend
 
-| Type        | Choice                       | Rationale                                            |
-| ----------- | ---------------------------- | ---------------------------------------------------- |
-| Framework   | Nest.js (Express)            | Structured, scalable architecture for APIs           |
-| Language    | TypeScript                   | Strict typing, shared types with frontend            |
-| Database    | MongoDB + Mongoose           | Flexible schema, rich querying capabilities          |
-| Data Access | Repository Pattern           | Abstracts Mongoose queries, improves testability     |
-| Decoupling  | Event-driven (EventEmitter2) | Cascade deletes via events, no circular dependencies |
-| Validation  | class-validator              | Decorator-based validation for DTOs                  |
-| Auth        | Passport + JWT               | Standard, secure authentication strategies           |
+| Type        | Choice                       | Rationale                                                                           |
+| ----------- | ---------------------------- | ----------------------------------------------------------------------------------- |
+| Framework   | FastAPI (Python)             | High performance, async by design, automatic docs                                   |
+| Database    | PostgreSQL + SQLAlchemy      | Relational model, robust transaction support                                        |
+| Data Access | Router -> Session            | Simplified layer for demo, direct DB access                                         |
+| Decoupling  | DB-level `ON DELETE CASCADE` | No application-level cascade events needed                                          |
+| Validation  | Pydantic                     | Schema validation native to FastAPI                                                 |
+| Auth        | PyJWT                        | Standard, secure authentication strategies                                          |
+| Tooling     | uv + ruff                    | Single Rust-based tool for deps/venv; ruff replaces flake8+black+isort              |
+| Testing     | pytest + httpx `TestClient`  | Real app + test DB over mocks; run via `pnpm test` (turbo shims to `uv run pytest`) |
 
 ### Developer Experience
 
 | Tool       | Purpose                                           |
 | ---------- | ------------------------------------------------- |
 | Turborepo  | Monorepo task pipeline + local/remote build cache |
-| Rspack     | Rust-based bundler for 5-10x faster than webpack  |
 | Turbopack  | Rust bundler with filesystem caching for fast HMR |
 | Oxlint     | 50-100x faster than ESLint, clearer diagnostics   |
 | Oxfmt      | 30x faster formatter than Prettier                |
@@ -166,7 +153,8 @@ The monorepo shares business logic across platforms while keeping UI and navigat
 
 - Node.js latest LTS version
 - PNPM latest version
-- Docker / OrbStack (for local MongoDB)
+- uv (Python package manager)
+- Docker / OrbStack (for local PostgreSQL)
 - **For Mobile:** iOS Simulator (Xcode) or Android Emulator (Android Studio), or [Expo Go](https://expo.dev/go) on a physical device
 
 ### Environment Configuration
@@ -187,23 +175,16 @@ NODE_ENV=development
 JWT_SECRET=[your_secret]
 
 # Database Connection
-# Format: mongodb://[username]:[password]@[host]:[port]/[database]?[options]
+# Format: postgresql+psycopg://[username]:[password]@[host]:[port]/[database]
 # Required fields:
-# - username: Database user with appropriate permissions (default: root)
+# - username: Database user (default: root)
 # - password: User's password (default: 123456)
 # - host: Database host (localhost for development)
-# - port: MongoDB port (default: 27017)
-# - database: Database name (REQUIRED: next-project-manager)
-# - options: Additional connection parameters (default: authSource=admin)
+# - port: PostgreSQL port (default: 5432)
+# - database: Database name (REQUIRED: task_manager)
 #
-# ⚠️  IMPORTANT: The database name MUST be included in the URL
-# If omitted, MongoDB will default to "test" database
-#
-# Local MongoDB example:
-# DATABASE_URL="mongodb://root:123456@localhost:27017/next-project-manager?authSource=admin"
-#
-# MongoDB Atlas (Cloud) example:
-# DATABASE_URL="mongodb+srv://username:password@cluster.mongodb.net/next-project-manager?retryWrites=true&w=majority"
+# Local PostgreSQL example:
+# DATABASE_URL="postgresql+psycopg://root:123456@localhost:5432/task_manager"
 ```
 
 ### Setup
@@ -220,11 +201,12 @@ openssl rand -base64 32
 # Web Environment
 cp apps/web/env.example apps/webs/.env
 
-# start mongodb by docker-compose
-cd /apps/api/database
-docker-compose up -d
+# start postgresql by docker-compose
+cd apps/api/database
+docker compose up -d
+cd ../../..
 
-# initialize mongodb in root folder
+# initialize database tables and seed demo data in root folder
 pnpm init-db
 
 # Basic Commands
@@ -341,24 +323,17 @@ ai_docs/                    # AI documentation
 ├── api-context.md          # API project context & development constraints (loaded on demand)
 └── mobile-context.md       # Mobile app context, architecture & pitfalls (loaded on demand)
 apps/
-├── api/                    # Nest.js API server
-│   ├── __tests__/          # Unit tests (by Vitest)
-│   ├── database/           # MongoDB docker-compose and initialization
-│   ├── src/
-│   │   ├── common/
-│   │   │   ├── events/     # Domain events (BoardDeleted, ProjectDeleted)
-│   │   │   ├── filters/    # Global exception filter
-│   │   │   ├── interfaces/ # Shared interfaces
-│   │   │   └── pipes/      # Validation pipes (ParseObjectId)
-│   │   ├── constants/      # API constants and demo data
-│   │   └── modules/        # Feature modules (auth, boards, projects, tasks, users)
-│   │       └── */
-│   │           ├── repositories/  # Repository pattern (data access layer)
-│   │           ├── schemas/       # Mongoose schemas
-│   │           ├── dto/           # Request/response DTOs
-│   │           ├── *.service.ts   # Business logic
-│   │           ├── *.controller.ts
-│   │           └── *.module.ts
+├── api/                    # FastAPI server (uv-managed)
+│   ├── app/
+│   │   ├── main.py         # App factory, CORS, exception handlers, router registration
+│   │   ├── config.py       # Pydantic settings (env vars)
+│   │   ├── database.py     # SQLAlchemy engine + `get_db()` session dependency
+│   │   ├── models.py       # SQLAlchemy models (User, Board, Project, Task) with FK CASCADE
+│   │   ├── seed.py         # Demo data seeding (`pnpm init-db`)
+│   │   └── routers/        # Feature routers (auth, users, boards, projects, tasks)
+│   ├── tests/               # pytest suite (httpx TestClient against real app + test DB)
+│   ├── database/           # PostgreSQL docker-compose
+│   ├── pyproject.toml      # uv-managed deps + ruff config
 │   └── env.example         # Environment variables example
 ├── mobile/                 # React Native (Expo SDK) app
 │   ├── __tests__/          # Test files: hooks, API clients, auth, i18n, theme (Vitest)
@@ -484,7 +459,6 @@ MCP enables AI tools to interact directly with development infrastructure, elimi
 | [chrome-devtools-mcp](https://github.com/ChromeDevTools/chrome-devtools-mcp) | Browser state         | Allows AI agents to directly inspect and manipulate browser state via the DevTools Protocol. |
 | [context7-mcp](https://github.com/upstash/context7)                          | Documentation         | Get current library docs for AI agents                                                       |
 | [nextjs-mcp](https://nextjs.org/docs/app/guides/mcp)                         | Framework diagnostics | Allow AI agents direct access to dev server logs and routes                                  |
-| [playwright-mcp](https://github.com/microsoft/playwright-mcp)                | E2E testing           | Allow AI agents direct access to run e2e tests                                               |
 
 **AI Skills** (in `.agents/skills/`)
 
@@ -501,11 +475,10 @@ Based on [karpathy-guidelines](https://github.com/forrestchang/andrej-karpathy-s
 
 **API Skills**
 
-Based on and refined from [nestjs-best-practices](https://github.com/davila7/claude-code-templates/tree/main/cli-tool/components/skills/development/nestjs-expert)
-
-| Skill                   | Purpose                        | When to Use                                                                     |
-| :---------------------- | :----------------------------- | :------------------------------------------------------------------------------ |
-| `nestjs-best-practices` | NestJS architecture & patterns | Writing, reviewing, or refactoring NestJS code (Mongoose, Vitest, DI, security) |
+| Skill                 | Purpose                                     | When to Use                                                  |
+| :-------------------- | :------------------------------------------ | :----------------------------------------------------------- |
+| `fastapi-python`      | FastAPI architecture & async best practices | Writing, reviewing, or refactoring FastAPI routers/endpoints |
+| `sqlalchemy-postgres` | SQLAlchemy 2.0 + Pydantic + PostgreSQL      | Defining models, database sessions, or any DB-layer work     |
 
 **Mobile Skills**
 
@@ -596,15 +569,15 @@ Part of my engineering approach involves continuously evaluating emerging tools 
 
 [Turbopack](https://nextjs.org/docs/app/api-reference/turbopack) | [FS Caching](https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopackFileSystemCache)
 
-### Rspack (Nest.js Backend)
+### uv (Python Backend)
 
-| Aspect      | Details                                                 |
-| ----------- | ------------------------------------------------------- |
-| Status      | **Production** - replaced Webpack for Nest.js           |
-| Performance | 5-10x faster builds than Webpack                        |
-| Benefit     | Dramatic reduction in dev server startup and build time |
+| Aspect      | Details                                                      |
+| ----------- | ------------------------------------------------------------ |
+| Status      | **Production** - replaced NestJS/Rspack/Webpack for the API  |
+| Performance | Rust-based; resolves + installs deps 10-100x faster than pip |
+| Benefit     | Single tool for venv, deps, and running scripts (`uv run`)   |
 
-[Rspack](https://github.com/web-infra-dev/rspack)
+[uv](https://github.com/astral-sh/uv)
 
 ### TypeScript 7
 

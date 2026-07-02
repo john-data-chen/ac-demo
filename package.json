@@ -1,10 +1,10 @@
 {
-  "name": "turborepo-starter-kit",
+  "name": "ac-demo",
   "version": "1.0.0",
   "private": true,
   "author": {
     "name": "john.chen",
-    "url": "https://github.com/john-data-chen/turborepo-starter-kit"
+    "url": "https://github.com/john-data-chen/ac-demo"
   },
   "scripts": {
     "build": "turbo run build",
@@ -32,9 +32,9 @@
     "test:watch": "turbo run test:watch"
   },
   "devDependencies": {
-    "@commitlint/cli": "^21.1.0",
-    "@commitlint/config-conventional": "^21.1.0",
-    "@commitlint/cz-commitlint": "^21.1.0",
+    "@commitlint/cli": "^21.2.0",
+    "@commitlint/config-conventional": "^21.2.0",
+    "@commitlint/cz-commitlint": "^21.2.0",
     "@testing-library/jest-dom": "catalog:",
     "@testing-library/react": "catalog:",
     "@types/node": "catalog:",
@@ -48,11 +48,11 @@
     "jsdom": "catalog:",
     "lightningcss": "1.32.0",
     "lint-staged": "^17.0.8",
-    "oxfmt": "^0.56.0",
-    "oxlint": "^1.71.0",
-    "oxlint-tsgolint": "^0.23.0",
+    "oxfmt": "^0.57.0",
+    "oxlint": "^1.72.0",
+    "oxlint-tsgolint": "^0.24.0",
     "start-server-and-test": "^3.0.11",
-    "turbo": "^2.10.0",
+    "turbo": "^2.10.2",
     "vitest": "catalog:"
   },
   "lint-staged": {
@@ -61,6 +61,10 @@
     ],
     "**/*.{js,jsx,ts,tsx}": [
       "npx oxlint --config ./.oxlintrc.json --type-aware --fix"
+    ],
+    "apps/api/**/*.py": [
+      "uv run --directory apps/api ruff check --fix",
+      "uv run --directory apps/api ruff format"
     ]
   },
   "config": {

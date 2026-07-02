@@ -1,7 +1,7 @@
 # Full-Stack Multi-Platform Monorepo with AI-Assisted Development: Next.js + FastAPI + React Native (Expo)
 
 [![codecov](https://codecov.io/gh/john-data-chen/ac-demo/graph/badge.svg?token=SfyNDzLG6B)](https://codecov.io/gh/john-data-chen/ac-demo)
-[![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=john-data-chen_ac-demo)](https://sonarcloud.io/summary/new_code?id=john-data-chen_ac-demo)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=john-data-chen_ac-demo&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=john-data-chen_ac-demo)
 [![CI](https://github.com/john-data-chen/ac-demo/actions/workflows/CI.yml/badge.svg)](https://github.com/john-data-chen/ac-demo/actions/workflows/CI.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 

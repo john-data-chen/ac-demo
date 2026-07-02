@@ -28,7 +28,8 @@ Load matching skill **before writing code**.
 
 | Condition | Skill |
 |:--|:--|
-| NestJS modules, DI, guards, pipes, interceptors, Mongoose, testing, architecture | `nestjs-best-practices` |
+| FastAPI related tasks | `fastapi-python` |
+| Database, Schema, ROM related tasks | `sqlalchemy-postgres` |
 
 ### Mobile (also load `ai_docs/mobile-context.md`)
 

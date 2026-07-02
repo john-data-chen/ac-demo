@@ -4,14 +4,6 @@
 
 > A production-grade multi-platform monorepo demonstrating shared business logic across Web and Mobile. Built with a write-once approach for state management, validation, and types — while each platform retains full control over its UI and navigation. Showcases engineering practices, decision-making and AI-assisted optimization for senior full-stack roles.
 
-## Another Project
-
-### [Ultra Light Monorepo](https://github.com/john-data-chen/ultra-light-monorepo)
-
-Multi-user online ledger. Hono API backend + SvelteKit frontend. Turborepo architecture.
-Demonstrate framework agility. Switch frameworks easy. AI accelerate development.
-AI produce high-quality project fast. Achieve 95% test coverage. Implement Vercel Remote Cache.
-
 ## Architecture & Engineering Decisions
 
 ### Gallery
@@ -20,18 +12,18 @@ AI produce high-quality project fast. Achieve 95% test coverage. Implement Verce
 | :---------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------: |
 | <img src="./apps/web/public/assets/Screen_Recording.gif" alt="Web demo recording" width="270" height="579"> | <img src="./apps/mobile/assets/images/simulator-screenshot.png" alt="Mobile simulator screenshot" width="270" height="579"> |
 
-A production-grade Kanban application demonstrating monorepo architecture, test-driven development, and modern tooling practices. Originally built as a monolithic Next.js app ([next-dnd-starter-kit](https://github.com/john-data-chen/next-dnd-starter-kit)), then strategically re-architected to a decoupled frontend/backend system, and now expanded to a **multi-platform solution** with shared business logic across Web and Mobile by AI-assisted development.
+A production-grade Kanban application demonstrating monorepo architecture, test-driven development, and modern tooling practices. Originally built as a TypeScript Turborepo ([turborepo-starter-kit](https://github.com/john-data-chen/turborepo-starter-kit)), then strategically re-architected to a decoupled frontend/backend system, and now expanded to a **multi-platform solution** with shared business logic across Web and Mobile by AI-assisted development.
 
 ### Architectural Evolution
 
-| Aspect                | Before (Monolithic)                        | After (Decoupled Monorepo)                                            | Now (Multi-Platform)                                                | Trade-off Reasoning                                     |
-| --------------------- | ------------------------------------------ | --------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------- |
-| **Team Structure**    | Full-stack developers required             | Specialized Frontend & Backend Teams                                  | **+ Mobile Team with shared domain knowledge**                      | Teams share types/state; onboard faster via shared code |
-| **Development Cycle** | Tightly coupled; one change can impact all | Independent development cycles                                        | **Web & Mobile iterate independently on shared foundations**        | Platform teams move at their own pace                   |
-| **Deployment**        | Single, monolithic deployment              | Independent Frontend/Backend deployment                               | **+ OTA updates for Mobile via Expo**                               | Three independent release channels                      |
-| **Scalability**       | Vertical scaling of the entire app         | Targeted horizontal scaling (e.g., scale only the API service)        | **Same API serves Web & Mobile clients**                            | Single backend; multiple frontends                      |
-| **Technology Stack**  | Locked into Next.js for backend            | Flexible backend choice (FastAPI); can add more services              | **+ React Native (Expo) with NativeWind**                           | Best tool per platform; shared logic layer              |
-| **Code Reusability**  | Limited to the Next.js app                 | Centralized `ui` & `config` packages                                  | **+ Shared `store` and `i18n` packages (types, state, validation)** | Write once for logic; platform-specific for UI          |
+| Aspect                | Before (Monolithic)                        | After (Decoupled Monorepo)                                     | Now (Multi-Platform)                                                | Trade-off Reasoning                                     |
+| --------------------- | ------------------------------------------ | -------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------- |
+| **Team Structure**    | Full-stack developers required             | Specialized Frontend & Backend Teams                           | **+ Mobile Team with shared domain knowledge**                      | Teams share types/state; onboard faster via shared code |
+| **Development Cycle** | Tightly coupled; one change can impact all | Independent development cycles                                 | **Web & Mobile iterate independently on shared foundations**        | Platform teams move at their own pace                   |
+| **Deployment**        | Single, monolithic deployment              | Independent Frontend/Backend deployment                        | **+ OTA updates for Mobile via Expo**                               | Three independent release channels                      |
+| **Scalability**       | Vertical scaling of the entire app         | Targeted horizontal scaling (e.g., scale only the API service) | **Same API serves Web & Mobile clients**                            | Single backend; multiple frontends                      |
+| **Technology Stack**  | Locked into Next.js for backend            | Flexible backend choice (FastAPI); can add more services       | **+ React Native (Expo) with NativeWind**                           | Best tool per platform; shared logic layer              |
+| **Code Reusability**  | Limited to the Next.js app                 | Centralized `ui` & `config` packages                           | **+ Shared `store` and `i18n` packages (types, state, validation)** | Write once for logic; platform-specific for UI          |
 
 ### Code Sharing Strategy
 
@@ -131,15 +123,15 @@ The monorepo shares business logic across platforms while keeping UI and navigat
 
 ### Backend
 
-| Type        | Choice                       | Rationale                                            |
-| ----------- | ---------------------------- | ---------------------------------------------------- |
-| Framework   | FastAPI (Python)             | High performance, async by design, automatic docs    |
-| Database    | PostgreSQL + SQLAlchemy      | Relational model, robust transaction support         |
-| Data Access | Router -> Session            | Simplified layer for demo, direct DB access          |
-| Decoupling  | DB-level `ON DELETE CASCADE` | No application-level cascade events needed           |
-| Validation  | Pydantic                     | Schema validation native to FastAPI                  |
-| Auth        | PyJWT                        | Standard, secure authentication strategies           |
-| Tooling     | uv + ruff                    | Single Rust-based tool for deps/venv; ruff replaces flake8+black+isort |
+| Type        | Choice                       | Rationale                                                                           |
+| ----------- | ---------------------------- | ----------------------------------------------------------------------------------- |
+| Framework   | FastAPI (Python)             | High performance, async by design, automatic docs                                   |
+| Database    | PostgreSQL + SQLAlchemy      | Relational model, robust transaction support                                        |
+| Data Access | Router -> Session            | Simplified layer for demo, direct DB access                                         |
+| Decoupling  | DB-level `ON DELETE CASCADE` | No application-level cascade events needed                                          |
+| Validation  | Pydantic                     | Schema validation native to FastAPI                                                 |
+| Auth        | PyJWT                        | Standard, secure authentication strategies                                          |
+| Tooling     | uv + ruff                    | Single Rust-based tool for deps/venv; ruff replaces flake8+black+isort              |
 | Testing     | pytest + httpx `TestClient`  | Real app + test DB over mocks; run via `pnpm test` (turbo shims to `uv run pytest`) |
 
 ### Developer Experience
@@ -147,7 +139,6 @@ The monorepo shares business logic across platforms while keeping UI and navigat
 | Tool       | Purpose                                           |
 | ---------- | ------------------------------------------------- |
 | Turborepo  | Monorepo task pipeline + local/remote build cache |
-| Rspack     | Rust-based bundler for 5-10x faster than webpack  |
 | Turbopack  | Rust bundler with filesystem caching for fast HMR |
 | Oxlint     | 50-100x faster than ESLint, clearer diagnostics   |
 | Oxfmt      | 30x faster formatter than Prettier                |
@@ -468,7 +459,6 @@ MCP enables AI tools to interact directly with development infrastructure, elimi
 | [chrome-devtools-mcp](https://github.com/ChromeDevTools/chrome-devtools-mcp) | Browser state         | Allows AI agents to directly inspect and manipulate browser state via the DevTools Protocol. |
 | [context7-mcp](https://github.com/upstash/context7)                          | Documentation         | Get current library docs for AI agents                                                       |
 | [nextjs-mcp](https://nextjs.org/docs/app/guides/mcp)                         | Framework diagnostics | Allow AI agents direct access to dev server logs and routes                                  |
-| [playwright-mcp](https://github.com/microsoft/playwright-mcp)                | E2E testing           | Allow AI agents direct access to run e2e tests                                               |
 
 **AI Skills** (in `.agents/skills/`)
 
@@ -485,10 +475,10 @@ Based on [karpathy-guidelines](https://github.com/forrestchang/andrej-karpathy-s
 
 **API Skills**
 
-| Skill                | Purpose                                    | When to Use                                                             |
-| :------------------- | :------------------------------------------ | :----------------------------------------------------------------------- |
-| `fastapi-python`     | FastAPI architecture & async best practices | Writing, reviewing, or refactoring FastAPI routers/endpoints            |
-| `sqlalchemy-postgres` | SQLAlchemy 2.0 + Pydantic + PostgreSQL      | Defining models, database sessions, or any DB-layer work                 |
+| Skill                 | Purpose                                     | When to Use                                                  |
+| :-------------------- | :------------------------------------------ | :----------------------------------------------------------- |
+| `fastapi-python`      | FastAPI architecture & async best practices | Writing, reviewing, or refactoring FastAPI routers/endpoints |
+| `sqlalchemy-postgres` | SQLAlchemy 2.0 + Pydantic + PostgreSQL      | Defining models, database sessions, or any DB-layer work     |
 
 **Mobile Skills**
 
@@ -581,11 +571,11 @@ Part of my engineering approach involves continuously evaluating emerging tools 
 
 ### uv (Python Backend)
 
-| Aspect      | Details                                                       |
-| ----------- | -------------------------------------------------------------- |
-| Status      | **Production** - replaced NestJS/Rspack/Webpack for the API   |
-| Performance | Rust-based; resolves + installs deps 10-100x faster than pip  |
-| Benefit     | Single tool for venv, deps, and running scripts (`uv run`)     |
+| Aspect      | Details                                                      |
+| ----------- | ------------------------------------------------------------ |
+| Status      | **Production** - replaced NestJS/Rspack/Webpack for the API  |
+| Performance | Rust-based; resolves + installs deps 10-100x faster than pip |
+| Benefit     | Single tool for venv, deps, and running scripts (`uv run`)   |
 
 [uv](https://github.com/astral-sh/uv)
 

@@ -18,13 +18,19 @@ router = APIRouter(prefix="/boards", tags=["boards"])
 # ---------------------------------------------------------------------------
 
 
+def _user_ref(u: User | None) -> dict | None:
+    if not u:
+        return None
+    return {"_id": str(u.id), "name": u.name, "email": u.email}
+
+
 def _board_out(b: Board) -> dict:
     return {
         "_id": str(b.id),
         "title": b.title,
         "description": b.description,
-        "owner": str(b.owner_id),
-        "members": [str(m.id) for m in b.members],
+        "owner": _user_ref(b.owner) or str(b.owner_id),
+        "members": [_user_ref(m) for m in b.members],
         "projects": [str(p.id) for p in b.projects],
         "createdAt": b.created_at.isoformat() if b.created_at else None,
         "updatedAt": b.updated_at.isoformat() if b.updated_at else None,

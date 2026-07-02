@@ -135,28 +135,34 @@ def create_task(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+    from datetime import datetime
+
     try:
         project_id = uuid.UUID(body.project)
         board_id = uuid.UUID(body.board)
+        assignee_id = uuid.UUID(body.assignee) if body.assignee else None
+        due_date = datetime.fromisoformat(body.dueDate) if body.dueDate else None
     except ValueError:
         raise HTTPException(
             status_code=400,
-            detail={"statusCode": 400, "message": "Invalid ID", "error": "Bad Request"},
+            detail={
+                "statusCode": 400,
+                "message": "Invalid ID or date format",
+                "error": "Bad Request",
+            },
         )
-
-    from datetime import datetime
 
     task = Task(
         title=body.title,
         description=body.description,
         status=body.status or "TODO",
-        due_date=datetime.fromisoformat(body.dueDate) if body.dueDate else None,
+        due_date=due_date,
         order_in_project=body.orderInProject or 0,
         board_id=board_id,
         project_id=project_id,
         creator_id=current_user.id,
         last_modifier_id=current_user.id,
-        assignee_id=uuid.UUID(body.assignee) if body.assignee else None,
+        assignee_id=assignee_id,
     )
     db.add(task)
 
@@ -216,12 +222,22 @@ def update_task(
         task.description = body.description
     if body.status is not None:
         task.status = body.status
-    if body.dueDate is not None:
-        task.due_date = datetime.fromisoformat(body.dueDate) if body.dueDate else None
-    if body.orderInProject is not None:
-        task.order_in_project = body.orderInProject
-    if "assigneeId" in body.model_dump(exclude_unset=True):
-        task.assignee_id = uuid.UUID(body.assigneeId) if body.assigneeId else None
+    try:
+        if body.dueDate is not None:
+            task.due_date = datetime.fromisoformat(body.dueDate) if body.dueDate else None
+        if body.orderInProject is not None:
+            task.order_in_project = body.orderInProject
+        if "assigneeId" in body.model_dump(exclude_unset=True):
+            task.assignee_id = uuid.UUID(body.assigneeId) if body.assigneeId else None
+    except ValueError:
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "statusCode": 400,
+                "message": "Invalid ID or date format",
+                "error": "Bad Request",
+            },
+        )
     task.last_modifier_id = current_user.id
 
     db.commit()

@@ -476,6 +476,8 @@ Based on [karpathy-guidelines](https://github.com/forrestchang/andrej-karpathy-s
 
 **API Skills**
 
+Based on [fastapi-python](https://www.skills.sh/mindrally/skills/fastapi-python) and [sqlalchemy-postgres](https://www.skills.sh/cfircoo/claude-code-toolkit/sqlalchemy-postgres)
+
 | Skill                 | Purpose                                     | When to Use                                                  |
 | :-------------------- | :------------------------------------------ | :----------------------------------------------------------- |
 | `fastapi-python`      | FastAPI architecture & async best practices | Writing, reviewing, or refactoring FastAPI routers/endpoints |
@@ -530,7 +532,7 @@ By treating AI as an integrated part of the stack, this project achieves:
 
 - **Velocity**: 5-10x faster implementation of boilerplate and standard patterns, reduce time of PR review 30~40% by Gemini Code Assist.
 - **Quality**: Higher test coverage (80%+) through AI-generated test scaffolding, and PR review by Gemini Code Assist to reduce bugs and bed smell.
-- **Learning**: Rapid mastery of new tools (Rspack, Playwright, Storybook...and more) via AI-guided implementation.
+- **Learning**: Rapid mastery of new tools (FastAPI and other Python packages) via AI-guided implementation.
 - **Cost**: Lower costs by using AI agents skills to reduce tokens and match the best practices.
 - **Focus**: Shifted engineering time from syntax to system architecture and user experience.
 
@@ -579,6 +581,15 @@ Part of my engineering approach involves continuously evaluating emerging tools 
 | Benefit     | Single tool for venv, deps, and running scripts (`uv run`)   |
 
 [uv](https://github.com/astral-sh/uv)
+
+### ruff (Python Backend)
+
+| Aspect      | Details                                                                         |
+| ----------- | ------------------------------------------------------------------------------- |
+| Performance | 10-100x faster than existing linters (like Flake8) and formatters (like Black)  |
+| Benefit     | Built-in caching, to avoid re-analyzing unchanged files. And monorepo-friendly. |
+
+[ruff](https://github.com/astral-sh/ruff)
 
 ### TypeScript 7
 

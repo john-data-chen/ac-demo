@@ -36,7 +36,13 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Run Unit Tests by Vitest
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: "apps/api/uv.lock"
+
+      - name: Run Unit Tests
         # highlight-start
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
@@ -49,7 +55,7 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          slug: john-data-chen/turborepo-starter-kit
+          slug: john-data-chen/ac-demo
 
       - name: Official SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v6

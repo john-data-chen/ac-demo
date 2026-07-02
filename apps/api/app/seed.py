@@ -69,9 +69,15 @@ def seed(force: bool = False):
 
         if force and existing:
             print("Dropping existing demo data...")
-            # Delete in FK order
+            # owner_id has no ON DELETE CASCADE, so drop owned boards
+            # (cascades to projects/tasks) before deleting the users.
             demo_emails = {u["email"] for u in DEMO_USERS}
             users = db.query(User).filter(User.email.in_(demo_emails)).all()
+            user_ids = [u.id for u in users]
+            boards = db.query(Board).filter(Board.owner_id.in_(user_ids)).all()
+            for b in boards:
+                db.delete(b)
+            db.flush()
             for u in users:
                 db.delete(u)
             db.commit()

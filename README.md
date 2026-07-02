@@ -128,11 +128,11 @@ The monorepo shares business logic across platforms while keeping UI and navigat
 | Framework   | FastAPI (Python)             | High performance, async by design, automatic docs                                   |
 | Database    | PostgreSQL + SQLAlchemy      | Relational model, robust transaction support                                        |
 | Data Access | Router -> Session            | Simplified layer for demo, direct DB access                                         |
-| Decoupling  | DB-level `ON DELETE CASCADE` | No application-level cascade events needed                                          |
+| Decoupling  | ORM cascade + FK `CASCADE`   | `cascade="all, delete-orphan"` on Board→Project→Task; FK cascade on member tables   |
 | Validation  | Pydantic                     | Schema validation native to FastAPI                                                 |
 | Auth        | PyJWT                        | Standard, secure authentication strategies                                          |
 | Tooling     | uv + ruff                    | Single Rust-based tool for deps/venv; ruff replaces flake8+black+isort              |
-| Testing     | pytest + httpx `TestClient`  | Real app + test DB over mocks; run via `pnpm test` (turbo shims to `uv run pytest`) |
+| Testing     | pytest + httpx `AsyncClient` | Real app + test DB over mocks; run via `pnpm test` (turbo shims to `uv run pytest`) |
 
 ### Developer Experience
 
@@ -328,10 +328,11 @@ apps/
 │   │   ├── main.py         # App factory, CORS, exception handlers, router registration
 │   │   ├── config.py       # Pydantic settings (env vars)
 │   │   ├── database.py     # SQLAlchemy engine + `get_db()` session dependency
-│   │   ├── models.py       # SQLAlchemy models (User, Board, Project, Task) with FK CASCADE
+│   │   ├── models.py       # SQLAlchemy models (User, Board, Project, Task) with cascade deletes
+│   │   ├── serializers.py  # Shared NestJS-shape response serializers
 │   │   ├── seed.py         # Demo data seeding (`pnpm init-db`)
 │   │   └── routers/        # Feature routers (auth, users, boards, projects, tasks)
-│   ├── tests/               # pytest suite (httpx TestClient against real app + test DB)
+│   ├── tests/               # pytest suite (httpx AsyncClient against real app + test DB)
 │   ├── database/           # PostgreSQL docker-compose
 │   ├── pyproject.toml      # uv-managed deps + ruff config
 │   └── env.example         # Environment variables example

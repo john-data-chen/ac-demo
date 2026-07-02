@@ -70,7 +70,7 @@ async def test_profile_with_cookie(client, test_user):
     async with client as c:
         login = await c.post("/auth/login", json={"email": test_user.email})
         token = login.json()["access_token"]
-        r = await c.get("/auth/profile", cookies={"jwt": token})
+        r = await c.get("/auth/profile", headers={"Cookie": f"jwt={token}"})
     assert r.status_code == 200
     assert r.json()["email"] == test_user.email
 
@@ -87,6 +87,6 @@ async def test_logout(client, test_user):
     async with client as c:
         login = await c.post("/auth/login", json={"email": test_user.email})
         token = login.json()["access_token"]
-        r = await c.post("/auth/logout", cookies={"jwt": token})
+        r = await c.post("/auth/logout", headers={"Cookie": f"jwt={token}"})
     assert r.status_code == 200
     assert r.json()["message"] == "Successfully logged out"

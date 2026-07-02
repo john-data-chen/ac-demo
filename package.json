@@ -61,6 +61,10 @@
     ],
     "**/*.{js,jsx,ts,tsx}": [
       "npx oxlint --config ./.oxlintrc.json --type-aware --fix"
+    ],
+    "apps/api/**/*.py": [
+      "uv run --directory apps/api ruff check --fix",
+      "uv run --directory apps/api ruff format"
     ]
   },
   "config": {

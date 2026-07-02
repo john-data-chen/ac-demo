@@ -56,7 +56,7 @@ async def test_create_board(client, user_ids):
     assert r.status_code == 201
     data = r.json()
     assert data["title"] == "Test Board"
-    assert id1 in data["members"]
+    assert any(m["_id"] == id1 for m in data["members"])
 
 
 @pytest.mark.asyncio

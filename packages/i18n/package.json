@@ -1,0 +1,21 @@
+{
+  "name": "@repo/i18n",
+  "version": "0.0.1",
+  "private": true,
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./locales/en": "./src/locales/en.json",
+    "./locales/de": "./src/locales/de.json"
+  },
+  "scripts": {
+    "check-types": "tsgo --noEmit",
+    "format": "cd ../.. && oxfmt --no-error-on-unmatched-pattern --config .oxfmtrc.json packages/i18n",
+    "lint": "npx oxlint --config ../../.oxlintrc.json --fix"
+  },
+  "devDependencies": {
+    "@repo/tsconfig": "workspace:*",
+    "@typescript/native-preview": "catalog:"
+  }
+}

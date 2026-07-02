@@ -1,0 +1,80 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalEnv": ["NODE_ENV", "ENABLE_EXPERIMENTAL_COREPACK"],
+  "globalDependencies": ["packages/tsconfig/*"],
+  "remoteCache": {
+    "enabled": true
+  },
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", ".next/**", "!.next/cache/**", "storybook-static/**"]
+    },
+    "check-types": {
+      "dependsOn": ["^check-types"]
+    },
+    "storybook": {
+      "cache": false,
+      "persistent": true,
+      "dependsOn": ["^build"],
+      "inputs": ["src/**/*.{ts,tsx,js,jsx}", ".storybook/**/*"]
+    },
+    "storybook:build": {
+      "dependsOn": ["^build"],
+      "outputs": ["storybook-static/**"]
+    },
+    "storybook:test": {
+      "cache": false,
+      "dependsOn": ["^build"]
+    },
+    "lint": {
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "$TURBO_ROOT$/.oxlintrc.json",
+        "src/**/*.{ts,tsx,js,jsx}",
+        "app/**/*.{ts,tsx,js,jsx}",
+        "__tests__/**/*.{ts,tsx,js,jsx}"
+      ]
+    },
+    "format": {
+      "cache": false,
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "$TURBO_ROOT$/.oxfmtrc.json",
+        "src/**/*.{ts,tsx,js,jsx,css,scss}",
+        "app/**/*.{ts,tsx,js,jsx,css,scss}",
+        "__tests__/**/*.{ts,tsx,js,jsx,css,scss}"
+      ]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true,
+      "dependsOn": ["^build"]
+    },
+    "test": {
+      "inputs": ["src/**/*.{ts,tsx,js,jsx}", "__tests__/**/*.{ts,tsx,js,jsx}"]
+    },
+    "test:coverage": {
+      "inputs": ["src/**/*.{ts,tsx,js,jsx}", "__tests__/**/*.{ts,tsx,js,jsx}"],
+      "outputs": ["coverage/**"]
+    },
+    "test:e2e": {
+      "inputs": ["src/**/*.{ts,tsx,js,jsx}", "__tests__/**/*.{ts,tsx,js,jsx}"],
+      "cache": false
+    },
+    "test:watch": {
+      "cache": false,
+      "persistent": true
+    },
+    "init-db": {
+      "env": ["DATABASE_URL"],
+      "cache": false,
+      "dependsOn": ["^build"]
+    },
+    "init-db:force": {
+      "env": ["DATABASE_URL"],
+      "cache": false,
+      "dependsOn": ["^build"]
+    }
+  }
+}

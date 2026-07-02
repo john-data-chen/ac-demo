@@ -1,0 +1,61 @@
+{
+  "name": "@repo/api",
+  "version": "1.0.0",
+  "private": true,
+  "author": {
+    "name": "john.chen",
+    "url": "https://github.com/john-data-chen/turborepo-starter-kit"
+  },
+  "scripts": {
+    "build": "cross-env BUILD=true rspack build",
+    "check-types": "tsgo --noEmit",
+    "dev": "rspack dev",
+    "format": "cd ../.. && oxfmt --no-error-on-unmatched-pattern --config .oxfmtrc.json apps/api",
+    "init-db": "tsx database/init-db-data.ts",
+    "init-db:force": "tsx database/init-db-data.ts --force",
+    "lint": "npx oxlint --config ../../.oxlintrc.json --fix",
+    "prepare": "if [ \"$NODE_ENV\" != \"production\" ]; then husky; fi",
+    "start": "node dist/main.js",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@nestjs/common": "^11.1.27",
+    "@nestjs/config": "^4.0.4",
+    "@nestjs/core": "^11.1.27",
+    "@nestjs/jwt": "^11.0.2",
+    "@nestjs/mapped-types": "^2.1.1",
+    "@nestjs/mongoose": "^11.0.4",
+    "@nestjs/passport": "^11.0.5",
+    "@nestjs/platform-express": "^11.1.27",
+    "@nestjs/swagger": "^11.4.4",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.15.1",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "catalog:",
+    "eventemitter2": "^6.4.9",
+    "mongoose": "^9.7.3",
+    "passport": "^0.7.0",
+    "passport-custom": "^1.1.1",
+    "passport-jwt": "^4.0.1",
+    "reflect-metadata": "^0.2.2",
+    "run-script-webpack-plugin": "^0.2.3",
+    "uuid": "^14.0.1"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "^11.0.23",
+    "@nestjs/schematics": "^11.1.0",
+    "@nestjs/testing": "^11.1.27",
+    "@repo/tsconfig": "workspace:*",
+    "@rspack/cli": "2.1.1",
+    "@rspack/core": "2.1.1",
+    "@rspack/dev-server": "2.1.0",
+    "@types/cookie-parser": "^1.4.10",
+    "@types/express": "^5.0.6",
+    "@types/passport-jwt": "^4.0.1",
+    "cross-env": "^10.1.0",
+    "tsx": "^4.22.4",
+    "webpack-node-externals": "^3.0.0"
+  }
+}

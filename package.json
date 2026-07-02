@@ -1,0 +1,75 @@
+{
+  "name": "turborepo-starter-kit",
+  "version": "1.0.0",
+  "private": true,
+  "author": {
+    "name": "john.chen",
+    "url": "https://github.com/john-data-chen/turborepo-starter-kit"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "check-types": "turbo run check-types",
+    "commit": "git-cz",
+    "dev": "turbo run dev",
+    "format": "turbo run format",
+    "init-db": "turbo run init-db",
+    "init-db:force": "turbo run init-db:force",
+    "lint": "turbo run lint",
+    "mobile": "turbo run dev --filter=@repo/mobile",
+    "mobile:android": "turbo run android --filter=@repo/mobile",
+    "mobile:build:eas": "turbo run build:eas --filter=@repo/mobile",
+    "mobile:check-types": "turbo run check-types --filter=@repo/mobile",
+    "mobile:expo:fix": "turbo run expo:fix --filter=@repo/mobile",
+    "mobile:expo:upgrade": "turbo run expo:upgrade --filter=@repo/mobile",
+    "prepare": "if [ \"$NODE_ENV\" != \"production\" ]; then husky; fi",
+    "storybook": "turbo run storybook --filter=@repo/ui",
+    "storybook:build": "turbo run storybook:build --filter=@repo/ui",
+    "storybook:test": "turbo run storybook:test --filter=@repo/ui",
+    "test": "turbo run test",
+    "test:coverage": "turbo run test:coverage",
+    "test:e2e": "turbo run test:e2e --filter=@repo/web",
+    "test:e2e:install": "pnpm --filter=@repo/web exec playwright install --with-deps",
+    "test:watch": "turbo run test:watch"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^21.1.0",
+    "@commitlint/config-conventional": "^21.1.0",
+    "@commitlint/cz-commitlint": "^21.1.0",
+    "@testing-library/jest-dom": "catalog:",
+    "@testing-library/react": "catalog:",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@typescript/native-preview": "catalog:",
+    "@vitest/coverage-v8": "catalog:",
+    "commitizen": "^4.3.2",
+    "dotenv": "catalog:",
+    "husky": "^9.1.7",
+    "jsdom": "catalog:",
+    "lightningcss": "1.32.0",
+    "lint-staged": "^17.0.8",
+    "oxfmt": "^0.56.0",
+    "oxlint": "^1.71.0",
+    "oxlint-tsgolint": "^0.23.0",
+    "start-server-and-test": "^3.0.11",
+    "turbo": "^2.10.0",
+    "vitest": "catalog:"
+  },
+  "lint-staged": {
+    "**/*.{js,jsx,ts,tsx,css,scss}": [
+      "oxfmt --no-error-on-unmatched-pattern --config ./.oxfmtrc.json"
+    ],
+    "**/*.{js,jsx,ts,tsx}": [
+      "npx oxlint --config ./.oxlintrc.json --type-aware --fix"
+    ]
+  },
+  "config": {
+    "commitizen": {
+      "path": "@commitlint/cz-commitlint"
+    }
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "packageManager": "pnpm@11.9.0"
+}

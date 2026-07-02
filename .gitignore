@@ -43,8 +43,17 @@ apps/web/next-env.d.ts
 # Vercel
 .vercel
 
+# Python
+**/__pycache__/
+**/*.py[cod]
+**/.venv/
+**/.pytest_cache/
+**/.ruff_cache/
+**/*.egg-info/
+**/.coverage
+
 # Docker
-/apps/api/database/mongodb/
+/apps/api/database/postgres
 
 # Turborepo
 .turbo

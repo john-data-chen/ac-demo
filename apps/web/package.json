@@ -9,7 +9,7 @@
   "scripts": {
     "build": "next build",
     "check-types": "tsgo --noEmit",
-    "dev": "next dev",
+    "dev": "next dev -p 3005",
     "format": "cd ../.. && oxfmt --no-error-on-unmatched-pattern --config .oxfmtrc.json apps/web",
     "lint": "npx oxlint --config ../../.oxlintrc.json --fix",
     "prepare": "if [ \"$NODE_ENV\" != \"production\" ]; then husky; fi",

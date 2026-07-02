@@ -68,7 +68,7 @@ Load matching skill **before writing code**.
 
 | Type | Package | Description |
 |--|--|--|
-| App | `apps/api` | Nest.js (Express) — see `ai_docs/api-context.md` |
+| App | `apps/api` | FastAPI + SQLAlchemy + PostgreSQL — see `ai_docs/api-context.md` |
 | App | `apps/web` | Next.js AppRouter |
 | App | `apps/mobile` | React Native (Expo + React latest) — see `ai_docs/mobile-context.md` |
 | Pkg | `packages/global-tsconfig` | TS configs |
@@ -108,7 +108,7 @@ pnpm lint-staged      # Lint+format (stage files first)
 ```
 
 > [!NOTE]
-> Dev server already running via `pnpm dev`. API uses Rspack with hot reload.
+> Dev server already running via `pnpm dev`. API uses `uvicorn --reload` (via `uv run`) for hot reload.
 
 ## Pitfalls
 

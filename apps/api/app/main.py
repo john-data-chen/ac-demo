@@ -15,7 +15,7 @@ app = FastAPI(title="Task Management API", version="1.0")
 allowed_origins = [
     settings.next_public_web_url,
     "https://turborepo-starter-kit-web.vercel.app",
-    "http://localhost:3000",
+    "http://localhost:3005",
     "http://localhost:8081",
     "http://localhost:19006",
 ]

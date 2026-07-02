@@ -95,7 +95,18 @@ def create_board(
     board = Board(title=body.title, description=body.description, owner_id=current_user.id)
     # Owner always in members
     member_ids = set([str(current_user.id)] + (body.members or []))
-    members = db.query(User).filter(User.id.in_([uuid.UUID(mid) for mid in member_ids])).all()
+    try:
+        uuid_members = [uuid.UUID(mid) for mid in member_ids]
+    except ValueError:
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "statusCode": 400,
+                "message": "Invalid member UUID format",
+                "error": "Bad Request",
+            },
+        )
+    members = db.query(User).filter(User.id.in_(uuid_members)).all()
     board.members = members
     db.add(board)
     db.commit()
@@ -161,9 +172,18 @@ def update_board(
     if body.description is not None:
         board.description = body.description
     if body.members is not None:
-        board.members = (
-            db.query(User).filter(User.id.in_([uuid.UUID(mid) for mid in body.members])).all()
-        )
+        try:
+            uuid_members = [uuid.UUID(mid) for mid in body.members]
+        except ValueError:
+            raise HTTPException(
+                status_code=400,
+                detail={
+                    "statusCode": 400,
+                    "message": "Invalid member UUID format",
+                    "error": "Bad Request",
+                },
+            )
+        board.members = db.query(User).filter(User.id.in_(uuid_members)).all()
     db.commit()
     db.refresh(board)
     return _board_out(board)

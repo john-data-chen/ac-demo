@@ -32,7 +32,8 @@
         "$TURBO_DEFAULT$",
         "$TURBO_ROOT$/.oxlintrc.json",
         "src/**/*.{ts,tsx,js,jsx}",
-        "app/**/*.{ts,tsx,js,jsx}",
+        "app/**/*.{ts,tsx,js,jsx,py}",
+        "tests/**/*.py",
         "__tests__/**/*.{ts,tsx,js,jsx}"
       ]
     },
@@ -42,7 +43,8 @@
         "$TURBO_DEFAULT$",
         "$TURBO_ROOT$/.oxfmtrc.json",
         "src/**/*.{ts,tsx,js,jsx,css,scss}",
-        "app/**/*.{ts,tsx,js,jsx,css,scss}",
+        "app/**/*.{ts,tsx,js,jsx,css,scss,py}",
+        "tests/**/*.py",
         "__tests__/**/*.{ts,tsx,js,jsx,css,scss}"
       ]
     },
@@ -52,10 +54,20 @@
       "dependsOn": ["^build"]
     },
     "test": {
-      "inputs": ["src/**/*.{ts,tsx,js,jsx}", "__tests__/**/*.{ts,tsx,js,jsx}"]
+      "inputs": [
+        "src/**/*.{ts,tsx,js,jsx}",
+        "__tests__/**/*.{ts,tsx,js,jsx}",
+        "app/**/*.py",
+        "tests/**/*.py"
+      ]
     },
     "test:coverage": {
-      "inputs": ["src/**/*.{ts,tsx,js,jsx}", "__tests__/**/*.{ts,tsx,js,jsx}"],
+      "inputs": [
+        "src/**/*.{ts,tsx,js,jsx}",
+        "__tests__/**/*.{ts,tsx,js,jsx}",
+        "app/**/*.py",
+        "tests/**/*.py"
+      ],
       "outputs": ["coverage/**"]
     },
     "test:e2e": {

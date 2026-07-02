@@ -3,29 +3,8 @@
 import uuid
 
 import pytest
-from httpx import ASGITransport, AsyncClient
-from sqlalchemy import create_engine
-from sqlalchemy.orm import Session
 
-from app.database import Base, get_db
-from app.main import app
 from app.models import User
-
-TEST_DB_URL = "postgresql+psycopg://root:123456@localhost:5432/task_manager"
-
-
-@pytest.fixture(scope="module")
-def engine():
-    eng = create_engine(TEST_DB_URL)
-    Base.metadata.create_all(eng)
-    yield eng
-
-
-@pytest.fixture
-def db(engine):
-    with Session(engine) as session:
-        yield session
-        session.rollback()
 
 
 @pytest.fixture
@@ -35,16 +14,6 @@ def test_user(db):
     db.commit()
     db.refresh(user)
     return user
-
-
-@pytest.fixture
-def client(engine):
-    def override_db():
-        with Session(engine) as session:
-            yield session
-
-    app.dependency_overrides[get_db] = override_db
-    return AsyncClient(transport=ASGITransport(app=app), base_url="http://test")
 
 
 @pytest.mark.asyncio
@@ -70,7 +39,7 @@ async def test_profile_with_cookie(client, test_user):
     async with client as c:
         login = await c.post("/auth/login", json={"email": test_user.email})
         token = login.json()["access_token"]
-        r = await c.get("/auth/profile", cookies={"jwt": token})
+        r = await c.get("/auth/profile", headers={"Cookie": f"jwt={token}"})
     assert r.status_code == 200
     assert r.json()["email"] == test_user.email
 
@@ -87,6 +56,6 @@ async def test_logout(client, test_user):
     async with client as c:
         login = await c.post("/auth/login", json={"email": test_user.email})
         token = login.json()["access_token"]
-        r = await c.post("/auth/logout", cookies={"jwt": token})
+        r = await c.post("/auth/logout", headers={"Cookie": f"jwt={token}"})
     assert r.status_code == 200
     assert r.json()["message"] == "Successfully logged out"

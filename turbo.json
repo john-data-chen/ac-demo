@@ -54,6 +54,7 @@
       "dependsOn": ["^build"]
     },
     "test": {
+      "env": ["DATABASE_URL", "JWT_SECRET"],
       "inputs": [
         "src/**/*.{ts,tsx,js,jsx}",
         "__tests__/**/*.{ts,tsx,js,jsx}",
@@ -62,6 +63,7 @@
       ]
     },
     "test:coverage": {
+      "env": ["DATABASE_URL", "JWT_SECRET"],
       "inputs": [
         "src/**/*.{ts,tsx,js,jsx}",
         "__tests__/**/*.{ts,tsx,js,jsx}",

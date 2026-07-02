@@ -1,4 +1,5 @@
 import uuid
+from datetime import datetime
 
 from sqlalchemy import (
     Column,
@@ -12,7 +13,7 @@ from sqlalchemy import (
     func,
 )
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
 
@@ -57,24 +58,34 @@ project_members = Table(
 class User(Base):
     __tablename__ = "users"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    email = Column(String, nullable=False, unique=True, index=True)
-    name = Column(String, nullable=False)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    email: Mapped[str] = mapped_column(String, nullable=False, unique=True, index=True)
+    name: Mapped[str] = mapped_column(String, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
 
     # Relationships
-    owned_boards = relationship("Board", back_populates="owner", foreign_keys="Board.owner_id")
-    member_boards = relationship("Board", secondary=board_members, back_populates="members")
-    owned_projects = relationship(
+    owned_boards: Mapped[list["Board"]] = relationship(
+        "Board", back_populates="owner", foreign_keys="Board.owner_id"
+    )
+    member_boards: Mapped[list["Board"]] = relationship(
+        "Board", secondary=board_members, back_populates="members"
+    )
+    owned_projects: Mapped[list["Project"]] = relationship(
         "Project", back_populates="owner", foreign_keys="Project.owner_id"
     )
-    member_projects = relationship("Project", secondary=project_members, back_populates="members")
-    created_tasks = relationship("Task", back_populates="creator", foreign_keys="Task.creator_id")
-    assigned_tasks = relationship(
+    member_projects: Mapped[list["Project"]] = relationship(
+        "Project", secondary=project_members, back_populates="members"
+    )
+    created_tasks: Mapped[list["Task"]] = relationship(
+        "Task", back_populates="creator", foreign_keys="Task.creator_id"
+    )
+    assigned_tasks: Mapped[list["Task"]] = relationship(
         "Task", back_populates="assignee", foreign_keys="Task.assignee_id"
     )
-    modified_tasks = relationship(
+    modified_tasks: Mapped[list["Task"]] = relationship(
         "Task", back_populates="last_modifier", foreign_keys="Task.last_modifier_id"
     )
 

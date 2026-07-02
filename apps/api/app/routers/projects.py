@@ -1,6 +1,8 @@
 """Projects router — CRUD scoped to board."""
 
 import uuid
+from datetime import datetime
+from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
@@ -10,6 +12,7 @@ from sqlalchemy.orm import Session
 from app.auth import get_current_user
 from app.database import get_db
 from app.models import Board, Project, User
+from app.serializers import user_ref as _user_ref
 
 router = APIRouter(prefix="/projects", tags=["projects"])
 
@@ -17,12 +20,6 @@ router = APIRouter(prefix="/projects", tags=["projects"])
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
-
-
-def _user_ref(u: User | None) -> dict | None:
-    if not u:
-        return None
-    return {"_id": str(u.id), "name": u.name, "email": u.email}
 
 
 def _project_out(p: Project) -> dict:
@@ -74,7 +71,7 @@ class CreateProjectBody(BaseModel):
 class UpdateProjectBody(BaseModel):
     title: str | None = None
     description: str | None = None
-    status: str | None = None
+    status: Literal["TODO", "IN_PROGRESS", "DONE", "ARCHIVED"] | None = None
     dueDate: str | None = None
     assigneeId: str | None = None
     orderInBoard: int | None = None
@@ -196,13 +193,31 @@ def update_project(
     if body.status is not None:
         project.status = body.status
     if body.dueDate is not None:
-        from datetime import datetime
-
-        project.due_date = datetime.fromisoformat(body.dueDate)
+        try:
+            project.due_date = datetime.fromisoformat(body.dueDate)
+        except ValueError:
+            raise HTTPException(
+                status_code=400,
+                detail={
+                    "statusCode": 400,
+                    "message": "Invalid due date format",
+                    "error": "Bad Request",
+                },
+            )
     if body.orderInBoard is not None:
         project.order_in_board = body.orderInBoard
     if "assigneeId" in body.model_dump(exclude_unset=True):
-        project.assignee_id = uuid.UUID(body.assigneeId) if body.assigneeId else None
+        try:
+            project.assignee_id = uuid.UUID(body.assigneeId) if body.assigneeId else None
+        except ValueError:
+            raise HTTPException(
+                status_code=400,
+                detail={
+                    "statusCode": 400,
+                    "message": "Invalid assignee UUID format",
+                    "error": "Bad Request",
+                },
+            )
 
     db.commit()
     db.refresh(project)

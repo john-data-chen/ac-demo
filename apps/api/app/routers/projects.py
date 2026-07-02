@@ -198,11 +198,31 @@ def update_project(
     if body.dueDate is not None:
         from datetime import datetime
 
-        project.due_date = datetime.fromisoformat(body.dueDate)
+        try:
+            project.due_date = datetime.fromisoformat(body.dueDate)
+        except ValueError:
+            raise HTTPException(
+                status_code=400,
+                detail={
+                    "statusCode": 400,
+                    "message": "Invalid due date format",
+                    "error": "Bad Request",
+                },
+            )
     if body.orderInBoard is not None:
         project.order_in_board = body.orderInBoard
     if "assigneeId" in body.model_dump(exclude_unset=True):
-        project.assignee_id = uuid.UUID(body.assigneeId) if body.assigneeId else None
+        try:
+            project.assignee_id = uuid.UUID(body.assigneeId) if body.assigneeId else None
+        except ValueError:
+            raise HTTPException(
+                status_code=400,
+                detail={
+                    "statusCode": 400,
+                    "message": "Invalid assignee UUID format",
+                    "error": "Bad Request",
+                },
+            )
 
     db.commit()
     db.refresh(project)

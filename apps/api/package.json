@@ -16,7 +16,7 @@
     "lint": "uv run ruff check --fix app tests",
     "start": "uv run uvicorn app.main:app --port 3001",
     "test": "uv run pytest",
-    "test:coverage": "uv run pytest --cov=app --cov-report=term-missing",
+    "test:coverage": "uv run pytest --cov=app --cov-report=term-missing --cov-report=html:coverage --cov-report=xml:coverage/coverage.xml",
     "test:watch": "uv run pytest --watch"
   }
 }

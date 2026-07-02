@@ -32,3 +32,6 @@ ignore = []
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
+
+[tool.coverage.run]
+omit = ["app/seed.py", "app/init_db.py"]

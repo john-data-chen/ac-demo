@@ -414,7 +414,7 @@ packages/
 
 Storybook serves as the Single Source of Truth (SSOT) for UI components, providing living documentation that stays synchronized with the codebase.
 
-[Live Demo of Storybook](https://turborepo-starter-kit-storybook.vercel.app/)
+[Live Demo of Storybook](https://ac-demo-ui.vercel.app/)
 
 ### Implementation Highlights
 

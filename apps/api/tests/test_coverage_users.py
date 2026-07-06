@@ -38,14 +38,16 @@ async def test_auth_exceptions(client, user_ids, test_engine):
 
         # 401 Expired token
         expired_token = jwt.encode(
-            {"email": email1, "exp": 1}, settings.jwt_secret, algorithm="HS256"
+            {"email": email1, "exp": 1}, settings.jwt_secret.get_secret_value(), algorithm="HS256"
         )
         r_exp = await c.get("/users", headers={"Cookie": f"jwt={expired_token}"})
         assert r_exp.status_code == 401
 
         # 401 User not found
         fake_token = jwt.encode(
-            {"email": "doesnotexist@fake.com"}, settings.jwt_secret, algorithm="HS256"
+            {"email": "doesnotexist@fake.com"},
+            settings.jwt_secret.get_secret_value(),
+            algorithm="HS256",
         )
         r_notfound = await c.get("/users", headers={"Cookie": f"jwt={fake_token}"})
         assert r_notfound.status_code == 401

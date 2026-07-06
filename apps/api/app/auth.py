@@ -24,12 +24,12 @@ def create_token(user_id: str, email: str) -> str:
         "iat": datetime.now(UTC),
         "exp": datetime.now(UTC) + timedelta(days=JWT_EXPIRE_DAYS),
     }
-    return jwt.encode(payload, settings.jwt_secret, algorithm=JWT_ALGORITHM)
+    return jwt.encode(payload, settings.jwt_secret.get_secret_value(), algorithm=JWT_ALGORITHM)
 
 
 def _decode_token(token: str) -> dict:
     try:
-        return jwt.decode(token, settings.jwt_secret, algorithms=[JWT_ALGORITHM])
+        return jwt.decode(token, settings.jwt_secret.get_secret_value(), algorithms=[JWT_ALGORITHM])
     except jwt.ExpiredSignatureError:
         raise HTTPException(
             status_code=401,

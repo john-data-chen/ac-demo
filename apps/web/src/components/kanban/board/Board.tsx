@@ -113,6 +113,7 @@ function BoardContent() {
                     isBoardOwner={isBoardOwner}
                     isBoardMember={isBoardMember}
                     currentUserId={currentUserId}
+                    isDragActive={!!(activeProject || activeTask)}
                   />
                 </Fragment>
               ))}
@@ -128,6 +129,7 @@ function BoardContent() {
               isBoardOwner={isBoardOwner}
               isBoardMember={isBoardMember}
               currentUserId={currentUserId}
+              isDragActive
             />
           )}
           {activeTask && <TaskCard task={activeTask} isOverlay />}

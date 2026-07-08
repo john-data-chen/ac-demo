@@ -207,3 +207,101 @@ async def test_delete_task_non_creator(client, user_ids, test_engine):
         token2 = (await c.post("/auth/login", json={"email": email2})).json()["access_token"]
         r = await c.delete(f"/tasks/{task_id}", headers={"Cookie": f"jwt={token2}"})
     assert r.status_code == 403
+
+
+def _make_task(db, u1, board, project):
+    task = Task(
+        title="Lock Task",
+        status="TODO",
+        board_id=board.id,
+        project_id=project.id,
+        creator_id=u1.id,
+        last_modifier_id=u1.id,
+        order_in_project=0,
+    )
+    db.add(task)
+    db.commit()
+    db.refresh(task)
+    return task
+
+
+def _board_project(db, u1):
+    board = Board(title="BL", owner_id=u1.id, members=[u1])
+    db.add(board)
+    db.flush()
+    project = Project(
+        title="PL",
+        owner_id=u1.id,
+        board_id=board.id,
+        order_in_board=0,
+        status="TODO",
+        members=[u1],
+    )
+    db.add(project)
+    db.flush()
+    return board, project
+
+
+@pytest.mark.asyncio
+async def test_update_task_optimistic_lock_passes(client, user_ids, test_engine):
+    """Sending current updatedAt succeeds (rowcount == 1)."""
+    email1, id1, _, _ = user_ids
+    with Session(test_engine) as db:
+        u1 = db.get(User, uuid.UUID(id1))
+        board, project = _board_project(db, u1)
+        task = _make_task(db, u1, board, project)
+        task_id = str(task.id)
+        updated_at = task.updated_at.isoformat()
+
+    async with client as c:
+        token = (await c.post("/auth/login", json={"email": email1})).json()["access_token"]
+        r = await c.patch(
+            f"/tasks/{task_id}",
+            json={"title": "Updated", "updatedAt": updated_at},
+            headers={"Cookie": f"jwt={token}"},
+        )
+    assert r.status_code == 200
+    assert r.json()["title"] == "Updated"
+
+
+@pytest.mark.asyncio
+async def test_update_task_optimistic_lock_conflict(client, user_ids, test_engine):
+    """Sending stale updatedAt returns 409 (rowcount == 0)."""
+    email1, id1, _, _ = user_ids
+    with Session(test_engine) as db:
+        u1 = db.get(User, uuid.UUID(id1))
+        board, project = _board_project(db, u1)
+        task = _make_task(db, u1, board, project)
+        task_id = str(task.id)
+
+    stale_ts = "2000-01-01T00:00:00"
+    async with client as c:
+        token = (await c.post("/auth/login", json={"email": email1})).json()["access_token"]
+        r = await c.patch(
+            f"/tasks/{task_id}",
+            json={"title": "Conflict", "updatedAt": stale_ts},
+            headers={"Cookie": f"jwt={token}"},
+        )
+    assert r.status_code == 409
+    assert r.json()["error"] == "Conflict"
+
+
+@pytest.mark.asyncio
+async def test_update_task_no_optimistic_lock(client, user_ids, test_engine):
+    """Omitting updatedAt bypasses the lock (backward-compat)."""
+    email1, id1, _, _ = user_ids
+    with Session(test_engine) as db:
+        u1 = db.get(User, uuid.UUID(id1))
+        board, project = _board_project(db, u1)
+        task = _make_task(db, u1, board, project)
+        task_id = str(task.id)
+
+    async with client as c:
+        token = (await c.post("/auth/login", json={"email": email1})).json()["access_token"]
+        r = await c.patch(
+            f"/tasks/{task_id}",
+            json={"title": "No Lock"},
+            headers={"Cookie": f"jwt={token}"},
+        )
+    assert r.status_code == 200
+    assert r.json()["title"] == "No Lock"

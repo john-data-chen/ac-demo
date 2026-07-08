@@ -95,4 +95,6 @@ export interface UpdateTaskInput {
   assigneeId?: string | null;
   lastModifier: string;
   orderInProject?: number;
+  /** Optimistic lock: updatedAt the client last saw; server 409s if stale. */
+  updatedAt?: string;
 }

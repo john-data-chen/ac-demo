@@ -116,6 +116,9 @@ class UpdateTaskBody(BaseModel):
     assigneeId: str | None = None
     lastModifier: str | None = None
     orderInProject: int | None = None
+    # Optimistic lock: the updatedAt the client last saw. Optional so old
+    # clients keep working; when present and stale, the update is rejected.
+    updatedAt: str | None = None
 
 
 class MoveTaskBody(BaseModel):
@@ -230,6 +233,18 @@ def update_task(
 ):
     task = _get_task_or_404(task_id, db)
     _check_task_permission(task, current_user)
+
+    # ponytail: opt-in optimistic lock; covers PATCH only, /move still last-write-wins
+    if body.updatedAt is not None and task.updated_at is not None:
+        if task.updated_at.isoformat() != body.updatedAt:
+            raise HTTPException(
+                status_code=409,
+                detail={
+                    "statusCode": 409,
+                    "message": "Task was modified by someone else. Refresh and retry.",
+                    "error": "Conflict",
+                },
+            )
 
     if body.title is not None:
         task.title = body.title

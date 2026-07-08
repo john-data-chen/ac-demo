@@ -1,5 +1,6 @@
-import type { UpdateTaskInput } from "@repo/store";
+import type { Task, UpdateTaskInput } from "@repo/store";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Alert } from "react-native";
 
 import { taskApi } from "@/lib/api/task-api";
 import { useAuthStore } from "@/stores/auth";
@@ -23,7 +24,10 @@ export const useTasks = (projectId?: string, assigneeId?: string) => {
     queryFn: async () => taskApi.getTasks(projectId, assigneeId),
     enabled: !!projectId || !!assigneeId,
     staleTime: 0,
-    gcTime: 5 * 60 * 1000
+    gcTime: 5 * 60 * 1000,
+    // ponytail: 5s polling = near-real-time sync; RN has no window focus, so
+    // this is also what refreshes the list when returning to the screen
+    refetchInterval: 5000
   });
 };
 
@@ -62,11 +66,36 @@ export const useUpdateTask = () => {
       if (!user?._id) {
         throw new Error("User must be authenticated");
       }
-      return taskApi.updateTask(id, { ...updates, lastModifier: user._id });
+      // Optimistic lock: send the updatedAt we last saw so the server can
+      // 409 if someone else changed the task meanwhile. Cache miss = lock
+      // skipped (server treats it as opt-in).
+      const cachedTask =
+        queryClient.getQueryData<Task>(TASK_KEYS.detail(id)) ??
+        queryClient
+          .getQueriesData<Task[]>({ queryKey: TASK_KEYS.lists() })
+          .flatMap(([, tasks]) => tasks ?? [])
+          .find((task) => task._id === id);
+      // Pass the server's string through untouched: JS toISOString() formats
+      // differently from Python isoformat() and would false-409.
+      const lockToken = cachedTask?.updatedAt;
+      return taskApi.updateTask(id, {
+        ...updates,
+        lastModifier: user._id,
+        ...(typeof lockToken === "string" ? { updatedAt: lockToken } : {})
+      });
     },
     onSuccess: (updatedTask) => {
       queryClient.invalidateQueries({ queryKey: TASK_KEYS.detail(updatedTask._id) });
       queryClient.invalidateQueries({ queryKey: TASK_KEYS.list({ project: updatedTask.project }) });
+    },
+    onError: (err) => {
+      if ((err as Error & { status?: number }).status === 409) {
+        Alert.alert(
+          "Task changed",
+          "Someone else just updated this task. Showing the latest version."
+        );
+        queryClient.invalidateQueries({ queryKey: TASK_KEYS.all });
+      }
     }
   });
 };

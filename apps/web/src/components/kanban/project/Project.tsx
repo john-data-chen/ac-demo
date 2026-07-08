@@ -1,3 +1,4 @@
+import { useDndContext } from "@dnd-kit/core";
 import { SortableContext, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Badge } from "@repo/ui/components/badge";
@@ -131,6 +132,20 @@ function BoardProjectComponent({
   useEffect(() => {
     loadTasks();
   }, [loadTasks]);
+
+  // ponytail: 5s polling = near-real-time sync; swap for WebSocket/SSE if
+  // the backend ever leaves Vercel serverless. Paused while a drag is active
+  // so a refetch can't yank cards mid-drag.
+  const { active: dndActive } = useDndContext();
+  useEffect(() => {
+    if (dndActive) {
+      return;
+    }
+    const id = setInterval(loadTasks, 5000);
+    return () => {
+      clearInterval(id);
+    };
+  }, [loadTasks, dndActive]);
 
   const filteredTasks = useMemo(() => {
     if (!filter.status || !tasks?.length) {

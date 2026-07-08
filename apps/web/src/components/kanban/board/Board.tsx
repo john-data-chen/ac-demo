@@ -3,7 +3,7 @@
 import { DndContext, DragOverlay } from "@dnd-kit/core";
 import { SortableContext } from "@dnd-kit/sortable";
 import { Skeleton } from "@repo/ui/components/skeleton";
-import { Fragment, useMemo } from "react";
+import { Fragment, useEffect, useMemo } from "react";
 
 import { useWorkspaceStore } from "@/stores/workspace-store";
 import { Project, Task } from "@/types/dbInterface";
@@ -43,6 +43,20 @@ function BoardContent() {
     onDragEnd,
     onDragCancel
   } = useBoardDnd(projects, projectsId, setProjects, rawProjects);
+
+  // ponytail: 5s polling keeps columns in sync across users; silent so no
+  // skeleton flicker, paused while a drag is active
+  const fetchProjects = useWorkspaceStore((state) => state.fetchProjects);
+  const currentBoardId = useWorkspaceStore((state) => state.currentBoardId);
+  useEffect(() => {
+    if (!currentBoardId || activeProject || activeTask) {
+      return;
+    }
+    const id = setInterval(async () => fetchProjects(currentBoardId, true), 5000);
+    return () => {
+      clearInterval(id);
+    };
+  }, [currentBoardId, fetchProjects, activeProject, activeTask]);
 
   const filterTasks = (tasks: Task[] = []) => {
     if (!Array.isArray(tasks)) {

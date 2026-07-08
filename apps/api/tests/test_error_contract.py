@@ -140,6 +140,49 @@ async def test_update_task_invalid_status_is_400(client, user_ids, board_and_pro
 
 
 @pytest.mark.asyncio
+async def test_update_task_stale_updated_at_is_409(client, user_ids, board_and_project):
+    email1, _, _, _ = user_ids
+    _, _, task_id = board_and_project
+    async with client as c:
+        token = await _login(c, email1)
+        headers = {"Cookie": f"jwt={token}"}
+        current = (await c.get(f"/tasks/{task_id}", headers=headers)).json()
+
+        # Fresh updatedAt: accepted
+        r = await c.patch(
+            f"/tasks/{task_id}",
+            json={"title": "fresh", "updatedAt": current["updatedAt"]},
+            headers=headers,
+        )
+        assert r.status_code == 200
+
+        # Stale updatedAt (the pre-update value): rejected
+        r = await c.patch(
+            f"/tasks/{task_id}",
+            json={"title": "stale", "updatedAt": current["updatedAt"]},
+            headers=headers,
+        )
+    assert r.status_code == 409
+    body = r.json()
+    assert body["statusCode"] == 409
+    assert body["error"] == "Conflict"
+
+
+@pytest.mark.asyncio
+async def test_update_task_without_updated_at_skips_lock(client, user_ids, board_and_project):
+    email1, _, _, _ = user_ids
+    _, _, task_id = board_and_project
+    async with client as c:
+        token = await _login(c, email1)
+        r = await c.patch(
+            f"/tasks/{task_id}",
+            json={"title": "no lock"},
+            headers={"Cookie": f"jwt={token}"},
+        )
+    assert r.status_code == 200
+
+
+@pytest.mark.asyncio
 async def test_update_project_invalid_status_is_400(client, user_ids, board_and_project):
     email1, _, _, _ = user_ids
     _, project_id, _ = board_and_project

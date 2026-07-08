@@ -82,6 +82,17 @@ describe("fetchWithAuth", () => {
     expect(authService.logout).not.toHaveBeenCalled();
   });
 
+  it("should attach HTTP status to thrown errors (409 conflict)", async () => {
+    vi.mocked(authService.getToken).mockResolvedValue(null);
+    vi.mocked(fetch).mockResolvedValue({
+      ok: false,
+      status: 409,
+      json: async () => ({ message: "Task was modified by someone else. Refresh and retry." })
+    } as any);
+
+    await expect(fetchWithAuth("/test")).rejects.toMatchObject({ status: 409 });
+  });
+
   it("should handle error with text fallback when JSON parse fails", async () => {
     vi.mocked(authService.getToken).mockResolvedValue(null);
     vi.mocked(fetch).mockResolvedValue({

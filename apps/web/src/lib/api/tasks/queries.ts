@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 import { useWorkspaceStore } from "@/stores/workspace-store";
 import type { Task, TaskStatus } from "@/types/dbInterface";
@@ -132,6 +133,21 @@ export const useUpdateTask = () => {
         apiUpdates.assigneeId = updates.assigneeId ?? null;
       }
 
+      // Optimistic lock: send the updatedAt we last saw so the server can
+      // 409 if someone else changed the task meanwhile. Cache miss = lock
+      // skipped (server treats it as opt-in).
+      const cachedTask =
+        queryClient.getQueryData<Task>(TASK_KEYS.detail(id)) ??
+        queryClient
+          .getQueriesData<Task[]>({ queryKey: TASK_KEYS.lists() })
+          .flatMap(([, tasks]) => tasks ?? [])
+          .find((task) => task._id === id);
+      // Pass the server's string through untouched: JS toISOString() formats
+      // differently from Python isoformat() and would false-409.
+      if (typeof cachedTask?.updatedAt === "string") {
+        apiUpdates.updatedAt = cachedTask.updatedAt;
+      }
+
       return taskApi.updateTask(id, apiUpdates);
     },
 
@@ -192,10 +208,11 @@ export const useUpdateTask = () => {
           }
         }
 
+        // Keep the server's updatedAt: the mutation sends it as the
+        // optimistic-lock token, so fabricating one here would self-409.
         const newTask = {
           ...previousTask,
           ...updateFields,
-          updatedAt: new Date().toISOString(),
           _id: taskId // Ensure _id is always set
         };
 
@@ -218,6 +235,10 @@ export const useUpdateTask = () => {
     onError: (err, updatedTask, context) => {
       if (context?.previousTask) {
         queryClient.setQueryData(TASK_KEYS.detail(updatedTask.id), context.previousTask);
+      }
+      if ((err as Error & { status?: number }).status === 409) {
+        // onSettled below refetches, so the board heals itself
+        toast.error("This task was just changed by someone else. Showing the latest version.");
       }
     },
 

@@ -180,7 +180,9 @@ export function TaskForm({
                             {users.map((user) => (
                               <CommandItem
                                 key={user._id}
-                                value={user.name}
+                                // cmdk identifies items by value; names can collide, ids can't.
+                                // shouldFilter={false} above, so value is never used for search.
+                                value={user._id}
                                 onSelect={() => {
                                   field.onChange(user);
                                   setAssignOpen(false);

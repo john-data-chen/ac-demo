@@ -11,13 +11,9 @@ import { shouldSkipAndClear } from "@/lib/sync-state";
 export function useSyncNotification<T>(data: T | undefined, queryKey: readonly unknown[]) {
   const prevDataRef = useRef<string | null>(null);
   const isInitialRef = useRef(true);
-  const keyRef = useRef<string>("");
   const { t } = useTranslation();
 
-  // Create a stable key string from queryKey
-  useEffect(() => {
-    keyRef.current = JSON.stringify(queryKey);
-  }, [queryKey]);
+  const serializedQueryKey = JSON.stringify(queryKey);
 
   useEffect(() => {
     // Skip if no data yet
@@ -42,7 +38,7 @@ export function useSyncNotification<T>(data: T | undefined, queryKey: readonly u
     prevDataRef.current = current;
 
     // Skip if this key was marked to skip (local mutation)
-    if (shouldSkipAndClear(keyRef.current)) {
+    if (shouldSkipAndClear(serializedQueryKey)) {
       return;
     }
 
@@ -54,7 +50,7 @@ export function useSyncNotification<T>(data: T | undefined, queryKey: readonly u
       autoHide: true,
       topOffset: 60
     });
-  }, [data, queryKey, t]);
+  }, [data, serializedQueryKey, t]);
 
   const skipNext = useCallback(() => {
     // This is for external callers, but we'll use the module-level function instead

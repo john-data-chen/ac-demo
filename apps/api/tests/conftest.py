@@ -8,7 +8,10 @@ from sqlalchemy.orm import Session
 from app.config import settings
 from app.database import Base, get_db
 from app.main import app
-from app.models import User
+from app.models import Board, Project, Task, User
+
+# All test-created users must use this domain so session teardown can find them.
+TEST_EMAIL_DOMAIN = "@test.com"
 
 
 @pytest.fixture(scope="session")
@@ -17,6 +20,29 @@ def test_engine():
     eng = create_engine(settings.database_url)
     Base.metadata.create_all(eng)
     yield eng
+    # Teardown: tests run against the shared dev DB, so delete everything the
+    # test users own (tasks → projects → boards → users; owner_id has no
+    # ON DELETE CASCADE).
+    with Session(eng) as db:
+        users = db.query(User).filter(User.email.like(f"%{TEST_EMAIL_DOMAIN}")).all()
+        ids = [u.id for u in users]
+        if ids:
+            for t in db.query(Task).filter(
+                (Task.creator_id.in_(ids))
+                | (Task.assignee_id.in_(ids))
+                | (Task.last_modifier_id.in_(ids))
+            ):
+                db.delete(t)
+            db.flush()
+            for p in db.query(Project).filter(Project.owner_id.in_(ids)):
+                db.delete(p)
+            db.flush()
+            for b in db.query(Board).filter(Board.owner_id.in_(ids)):
+                db.delete(b)
+            db.flush()
+            for u in users:
+                db.delete(u)
+            db.commit()
 
 
 @pytest.fixture

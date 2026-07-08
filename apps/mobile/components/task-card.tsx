@@ -14,6 +14,7 @@ import Animated, {
 } from "react-native-reanimated";
 
 import { useUpdateTask, useDeleteTask } from "@/hooks/use-tasks";
+import { markSkipNext } from "@/lib/sync-state";
 import { View, Text, Pressable } from "@/lib/tw";
 
 interface TaskCardProps {
@@ -61,8 +62,11 @@ export function TaskCard({ task, onMoveToProject }: TaskCardProps) {
     const nextStatus = STATUS_ORDER[(safeIndex + 1) % STATUS_ORDER.length];
 
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    // Mark to skip sync notification since this is a local change
+    const taskQueryKey = JSON.stringify(["tasks", "list", { project: task.project }]);
+    markSkipNext(taskQueryKey);
     updateTaskMutation.mutate({ id: task._id, status: nextStatus });
-  }, [task._id, task.status, updateTaskMutation]);
+  }, [task._id, task.status, task.project, updateTaskMutation]);
 
   const handleMoveTo = useCallback(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -83,12 +87,15 @@ export function TaskCard({ task, onMoveToProject }: TaskCardProps) {
           style: "destructive",
           onPress: () => {
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+            // Mark to skip sync notification since this is a local change
+            const taskQueryKey = JSON.stringify(["tasks", "list", { project: task.project }]);
+            markSkipNext(taskQueryKey);
             deleteTaskMutation.mutate(task._id);
           }
         }
       ]
     );
-  }, [t, task.title, task._id, deleteTaskMutation]);
+  }, [t, task.title, task._id, task.project, deleteTaskMutation]);
 
   const pan = Gesture.Pan()
     .activeOffsetX([-15, 15])

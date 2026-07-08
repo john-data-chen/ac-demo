@@ -2,6 +2,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { projectApi, type UpdateProjectInput } from "@/lib/api/project-api";
 
+import { useSyncNotification } from "./use-sync-notification";
+
 export const PROJECT_KEYS = {
   all: ["projects"] as const,
   lists: () => [...PROJECT_KEYS.all, "list"] as const,
@@ -11,7 +13,7 @@ export const PROJECT_KEYS = {
 };
 
 export const useProjects = (boardId?: string) => {
-  return useQuery({
+  const query = useQuery({
     queryKey: PROJECT_KEYS.list(boardId || ""),
     queryFn: async () => {
       if (!boardId) {
@@ -23,6 +25,10 @@ export const useProjects = (boardId?: string) => {
     // ponytail: 5s polling = near-real-time sync across users
     refetchInterval: 5000
   });
+
+  useSyncNotification(query.data, PROJECT_KEYS.list(boardId || ""));
+
+  return query;
 };
 
 export const useCreateProject = () => {

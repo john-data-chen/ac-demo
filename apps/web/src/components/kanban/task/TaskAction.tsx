@@ -36,6 +36,7 @@ import { z } from "zod";
 
 import { TaskForm } from "@/components/kanban/task/TaskForm";
 import { useDeleteTask, useTask, useUpdateTask } from "@/lib/api/tasks/queries";
+import { markSkipNext } from "@/lib/hooks/sync-state";
 import { useWorkspaceStore } from "@/stores/workspace-store";
 import { TaskStatus } from "@/types/dbInterface";
 import { TASK_KEYS } from "@/types/taskApi";
@@ -124,7 +125,7 @@ export function TaskActions({
       const { title, description, status, dueDate, assignee } = values;
 
       // The current user ID is now handled by the useUpdateTask hook
-
+      markSkipNext(`tasks-${projectId}`);
       await updateTaskMutation.mutateAsync(
         {
           id,
@@ -249,6 +250,7 @@ export function TaskActions({
       setIsDeleted(true);
 
       // 5. Execute the delete mutation
+      markSkipNext(`tasks-${projectId}`);
       await deleteTaskMutation.mutateAsync(id, {
         onSuccess: async () => {
           try {

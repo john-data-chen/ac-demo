@@ -10,6 +10,7 @@ import { KeyboardAvoidingView, Platform, Modal, FlatList, Alert } from "react-na
 
 import { useCreateTask } from "@/hooks/use-tasks";
 import { useUsers } from "@/hooks/use-users";
+import { markSkipNext } from "@/lib/sync-state";
 import { View, Text, TextInput, Pressable, ScrollView } from "@/lib/tw";
 
 export default function NewTaskScreen() {
@@ -36,6 +37,9 @@ export default function NewTaskScreen() {
     }
 
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    // Mark to skip sync notification since this is a local change
+    const taskQueryKey = JSON.stringify(["tasks", "list", { project: projectId }]);
+    markSkipNext(taskQueryKey);
     createTaskMutation.mutate(
       {
         title,

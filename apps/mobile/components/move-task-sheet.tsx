@@ -7,6 +7,7 @@ import { Modal, ActivityIndicator, Platform, ActionSheetIOS } from "react-native
 
 import { useProjects } from "@/hooks/use-projects";
 import { useMoveTask } from "@/hooks/use-tasks";
+import { markSkipNext } from "@/lib/sync-state";
 import { View, Text, Pressable, ScrollView } from "@/lib/tw";
 
 interface MoveTaskSheetProps {
@@ -48,6 +49,8 @@ export function MoveTaskSheet({
           const targetProject = availableProjects[buttonIndex];
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
           onClose();
+          // Mark to skip sync notification since this is a local change
+          markSkipNext(JSON.stringify(["tasks", "list"]));
           moveTaskMutation.mutate({ taskId, projectId: targetProject._id, orderInProject: 0 });
         } else {
           onClose();
@@ -69,6 +72,8 @@ export function MoveTaskSheet({
   const handleMove = (targetProjectId: string) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     onClose();
+    // Mark to skip sync notification since this is a local change
+    markSkipNext(JSON.stringify(["tasks", "list"]));
     moveTaskMutation.mutate({ taskId, projectId: targetProjectId, orderInProject: 0 });
   };
 

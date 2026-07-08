@@ -2,6 +2,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { boardApi, type UpdateBoardInput } from "@/lib/api/board-api";
 
+import { useSyncNotification } from "./use-sync-notification";
+
 export const BOARD_KEYS = {
   all: ["boards"] as const,
   lists: () => [...BOARD_KEYS.all, "list"] as const,
@@ -11,7 +13,7 @@ export const BOARD_KEYS = {
 };
 
 export const useBoards = () => {
-  return useQuery({
+  const query = useQuery({
     queryKey: BOARD_KEYS.list(),
     queryFn: async () => boardApi.getBoards(),
     retry: 3,
@@ -21,15 +23,23 @@ export const useBoards = () => {
     // ponytail: 5s polling = near-real-time sync across users
     refetchInterval: 5000
   });
+
+  useSyncNotification(query.data, BOARD_KEYS.list());
+
+  return query;
 };
 
 export const useBoard = (boardId?: string) => {
-  return useQuery({
+  const query = useQuery({
     queryKey: BOARD_KEYS.detail(boardId || ""),
     queryFn: async () => boardApi.getBoardById(boardId || ""),
     enabled: !!boardId,
     refetchInterval: 5000
   });
+
+  useSyncNotification(query.data, BOARD_KEYS.detail(boardId || ""));
+
+  return query;
 };
 
 export const useCreateBoard = () => {

@@ -7,6 +7,7 @@ import { Stack, useRouter, useSegments } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import Toast from "react-native-toast-message";
 
 import { useAuth } from "@/hooks/use-auth";
 import { queryClient } from "@/lib/query-client";
@@ -64,6 +65,7 @@ function RootLayoutNav() {
         <Stack.Screen name="projects" options={{ headerShown: false }} />
       </Stack>
       <StatusBar style="light" />
+      <Toast />
     </ThemeProvider>
   );
 }

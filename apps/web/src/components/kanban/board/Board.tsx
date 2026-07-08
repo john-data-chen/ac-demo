@@ -5,6 +5,7 @@ import { SortableContext } from "@dnd-kit/sortable";
 import { Skeleton } from "@repo/ui/components/skeleton";
 import { Fragment, useEffect, useMemo } from "react";
 
+import { useSyncNotification } from "@/lib/hooks/use-sync-notification";
 import { useWorkspaceStore } from "@/stores/workspace-store";
 import { Project, Task } from "@/types/dbInterface";
 
@@ -48,15 +49,21 @@ function BoardContent() {
   // skeleton flicker, paused while a drag is active
   const fetchProjects = useWorkspaceStore((state) => state.fetchProjects);
   const currentBoardId = useWorkspaceStore((state) => state.currentBoardId);
+  const { compareAndNotify } = useSyncNotification();
   useEffect(() => {
     if (!currentBoardId || activeProject || activeTask) {
       return;
     }
-    const id = setInterval(async () => fetchProjects(currentBoardId, true), 5000);
+    const id = setInterval(async () => {
+      await fetchProjects(currentBoardId, true);
+      // Notify if projects changed
+      const currentProjects = useWorkspaceStore.getState().projects;
+      compareAndNotify("projects", currentProjects);
+    }, 5000);
     return () => {
       clearInterval(id);
     };
-  }, [currentBoardId, fetchProjects, activeProject, activeTask]);
+  }, [currentBoardId, fetchProjects, activeProject, activeTask, compareAndNotify]);
 
   const filterTasks = (tasks: Task[] = []) => {
     if (!Array.isArray(tasks)) {

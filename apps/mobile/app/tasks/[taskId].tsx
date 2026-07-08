@@ -17,6 +17,7 @@ import {
 
 import { useTask, useUpdateTask, useDeleteTask } from "@/hooks/use-tasks";
 import { useUsers } from "@/hooks/use-users";
+import { markSkipNext } from "@/lib/sync-state";
 import { View, Text, TextInput, Pressable, ScrollView } from "@/lib/tw";
 
 export default function TaskDetailScreen() {
@@ -60,6 +61,9 @@ export default function TaskDetailScreen() {
     }
 
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    // Mark to skip sync notification since this is a local change
+    const taskQueryKey = JSON.stringify(["tasks", "list", { project: task?.project }]);
+    markSkipNext(taskQueryKey);
     updateTaskMutation.mutate(
       {
         id: taskId,
@@ -96,6 +100,9 @@ export default function TaskDetailScreen() {
           style: "destructive",
           onPress: () => {
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+            // Mark to skip sync notification since this is a local change
+            const taskQueryKey = JSON.stringify(["tasks", "list", { project: task?.project }]);
+            markSkipNext(taskQueryKey);
             deleteTaskMutation.mutate(taskId, {
               onSuccess: () => {
                 router.back();

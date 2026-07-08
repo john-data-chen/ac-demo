@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Alert, KeyboardAvoidingView, Platform, ActivityIndicator } from "react-native";
 
 import { useCreateBoard, useUpdateBoard, useBoard } from "@/hooks/use-boards";
+import { markSkipNext } from "@/lib/sync-state";
 import { View, Text, Pressable, TextInput, ScrollView, useCSSVariable } from "@/lib/tw";
 import { useAuthStore } from "@/stores/auth";
 
@@ -38,6 +39,9 @@ export default function BoardFormScreen() {
     if (!title) {
       return;
     }
+
+    // Mark to skip sync notification since this is a local change
+    markSkipNext(JSON.stringify(["boards", "list"]));
 
     if (isEdit && boardId) {
       updateMutation.mutate(

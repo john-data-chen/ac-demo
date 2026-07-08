@@ -49,15 +49,16 @@ export function MoveTaskSheet({
           const targetProject = availableProjects[buttonIndex];
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
           onClose();
-          // Mark to skip sync notification since this is a local change
-          markSkipNext(JSON.stringify(["tasks", "list"]));
+          // Mark to skip sync notification for both source and dest project lists
+          markSkipNext(JSON.stringify(["tasks", "list", { project: currentProjectId }]));
+          markSkipNext(JSON.stringify(["tasks", "list", { project: targetProject._id }]));
           moveTaskMutation.mutate({ taskId, projectId: targetProject._id, orderInProject: 0 });
         } else {
           onClose();
         }
       }
     );
-  }, [availableProjects, t, taskId, moveTaskMutation, onClose]);
+  }, [availableProjects, t, taskId, currentProjectId, moveTaskMutation, onClose]);
 
   useEffect(() => {
     if (!visible) {
@@ -72,8 +73,9 @@ export function MoveTaskSheet({
   const handleMove = (targetProjectId: string) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     onClose();
-    // Mark to skip sync notification since this is a local change
-    markSkipNext(JSON.stringify(["tasks", "list"]));
+    // Mark to skip sync notification for both source and dest project lists
+    markSkipNext(JSON.stringify(["tasks", "list", { project: currentProjectId }]));
+    markSkipNext(JSON.stringify(["tasks", "list", { project: targetProjectId }]));
     moveTaskMutation.mutate({ taskId, projectId: targetProjectId, orderInProject: 0 });
   };
 

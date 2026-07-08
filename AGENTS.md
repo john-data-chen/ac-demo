@@ -24,14 +24,14 @@ Load matching skill **before writing code**.
 | **Any coding task** — writing, refactoring, fixing bugs               | `karpathy-guidelines` |
 | Task handoff, session continuity, progress tracking, multi-step plans | `session-handoff`     |
 
-### API (check `ai_docs/api-context.md`)
+### API (check `ai-docs/api-context.md`)
 
 | Condition                           | Skill                 |
 | :---------------------------------- | :-------------------- |
 | FastAPI related tasks               | `fastapi-python`      |
 | Database, Schema, ROM related tasks | `sqlalchemy-postgres` |
 
-### Mobile (check `ai_docs/mobile-context.md`)
+### Mobile (check `ai-docs/mobile-context.md`)
 
 | Condition                                                                 | Skill                  |
 | :------------------------------------------------------------------------ | :--------------------- |
@@ -68,9 +68,9 @@ Load matching skill **before writing code**.
 
 | Type | Package                    | Description                                                          |
 | ---- | -------------------------- | -------------------------------------------------------------------- |
-| App  | `apps/api`                 | FastAPI + SQLAlchemy + PostgreSQL — see `ai_docs/api-context.md`     |
+| App  | `apps/api`                 | FastAPI + SQLAlchemy + PostgreSQL — see `ai-docs/api-context.md`     |
 | App  | `apps/web`                 | Next.js AppRouter                                                    |
-| App  | `apps/mobile`              | React Native (Expo + React latest) — see `ai_docs/mobile-context.md` |
+| App  | `apps/mobile`              | React Native (Expo + React latest) — see `ai-docs/mobile-context.md` |
 | Pkg  | `packages/global-tsconfig` | TS configs                                                           |
 | Pkg  | `packages/i18n`            | Shared i18n (EN/DE), locale config, Messages type                    |
 | Pkg  | `packages/store`           | Domain types, Zustand stores, StorageAdapter                         |

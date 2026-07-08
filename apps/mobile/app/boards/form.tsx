@@ -42,6 +42,9 @@ export default function BoardFormScreen() {
 
     // Mark to skip sync notification since this is a local change
     markSkipNext(JSON.stringify(["boards", "list"]));
+    if (isEdit && boardId) {
+      markSkipNext(JSON.stringify(["boards", "detail", boardId]));
+    }
 
     if (isEdit && boardId) {
       updateMutation.mutate(

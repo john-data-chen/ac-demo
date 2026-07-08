@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 from app.auth import get_current_user
 from app.database import get_db
 from app.models import Board, User
+from app.serializers import project_ref as _project_ref
 from app.serializers import user_ref as _user_ref
 
 router = APIRouter(prefix="/boards", tags=["boards"])
@@ -26,7 +27,7 @@ def _board_out(b: Board) -> dict:
         "description": b.description,
         "owner": _user_ref(b.owner) or str(b.owner_id),
         "members": [_user_ref(m) for m in b.members],
-        "projects": [str(p.id) for p in b.projects],
+        "projects": [_project_ref(p) for p in b.projects],
         "createdAt": b.created_at.isoformat() if b.created_at else None,
         "updatedAt": b.updated_at.isoformat() if b.updated_at else None,
     }

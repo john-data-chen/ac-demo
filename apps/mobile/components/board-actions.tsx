@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Alert } from "react-native";
 
 import { useDeleteBoard } from "@/hooks/use-boards";
+import { markSkipNext } from "@/lib/sync-state";
 import { Pressable } from "@/lib/tw";
 
 interface BoardActionsProps {
@@ -33,6 +34,7 @@ export function BoardActions({ boardId, boardTitle }: BoardActionsProps) {
           text: t("kanban.actions.delete"),
           style: "destructive",
           onPress: () => {
+            markSkipNext(JSON.stringify(["boards", "list"]));
             deleteMutation.mutate(boardId, {
               onSuccess: () => {
                 router.replace("/(tabs)");

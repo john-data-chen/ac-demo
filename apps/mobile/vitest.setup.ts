@@ -105,3 +105,11 @@ vi.mock("@react-native-async-storage/async-storage", () => ({
     multiMerge: vi.fn()
   }
 }));
+
+// Mock react-native-toast-message
+vi.mock("react-native-toast-message", () => ({
+  default: {
+    show: vi.fn(),
+    hide: vi.fn()
+  }
+}));

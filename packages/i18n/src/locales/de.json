@@ -152,7 +152,8 @@
     "edit": "Bearbeiten",
     "save": "Speichern",
     "create": "Erstellen",
-    "loading": "Wird geladen..."
+    "loading": "Wird geladen...",
+    "synced": "Synchronisiert"
   },
   "user": {
     "logOut": "Abmelden"

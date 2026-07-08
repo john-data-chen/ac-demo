@@ -15,6 +15,7 @@ import { useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { taskApi } from "@/lib/api/taskApi";
+import { markSkipNext } from "@/lib/hooks/sync-state";
 import { Project, Task } from "@/types/dbInterface";
 import DraggableData from "@/types/drag&drop";
 
@@ -248,6 +249,7 @@ export function useBoardDnd(
       setProjects(updatedProjects);
 
       try {
+        markSkipNext("projects");
         const { projectApi } = await import("@/lib/api/projectApi");
 
         const updatePromises = updatedProjects.map(async (project, newIndex) => {

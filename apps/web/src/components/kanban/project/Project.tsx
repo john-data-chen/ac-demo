@@ -10,6 +10,7 @@ import { PointerIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 
+import { useSyncNotification } from "@/lib/hooks/use-sync-notification";
 import { useWorkspaceStore } from "@/stores/workspace-store";
 import { Project, UserInfo, type Task } from "@/types/dbInterface";
 
@@ -70,6 +71,7 @@ function BoardProjectComponent({
   const [tasks, setTasks] = useState(initialTasks);
   const [_isLoading, setIsLoading] = useState(false);
   const [_error, setError] = useState<string | null>(null);
+  const { compareAndNotify } = useSyncNotification();
 
   // Memoize the helper function
   const getUserDisplayName = useCallback((user: string | UserInfo | null | undefined): string => {
@@ -112,13 +114,15 @@ function BoardProjectComponent({
     try {
       const fetchedTasks = await fetchTasksByProject(project._id);
       setTasks(fetchedTasks);
+      // Notify if tasks changed
+      compareAndNotify(`tasks-${project._id}`, fetchedTasks);
     } catch (err) {
       console.error("Failed to load tasks:", err);
       setError("Failed to load tasks");
     } finally {
       setIsLoading(false);
     }
-  }, [project?._id, fetchTasksByProject]);
+  }, [project?._id, fetchTasksByProject, compareAndNotify]);
 
   // Handle task updates from child components
   const handleTaskUpdate = useCallback(async () => {

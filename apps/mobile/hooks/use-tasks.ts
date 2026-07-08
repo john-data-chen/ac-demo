@@ -5,6 +5,8 @@ import { Alert } from "react-native";
 import { taskApi } from "@/lib/api/task-api";
 import { useAuthStore } from "@/stores/auth";
 
+import { useSyncNotification } from "./use-sync-notification";
+
 export const TASK_KEYS = {
   all: ["tasks"] as const,
   lists: () => [...TASK_KEYS.all, "list"] as const,
@@ -19,7 +21,7 @@ export const TASK_KEYS = {
 };
 
 export const useTasks = (projectId?: string, assigneeId?: string) => {
-  return useQuery({
+  const query = useQuery({
     queryKey: TASK_KEYS.list({ project: projectId, assignee: assigneeId }),
     queryFn: async () => taskApi.getTasks(projectId, assigneeId),
     enabled: !!projectId || !!assigneeId,
@@ -29,6 +31,10 @@ export const useTasks = (projectId?: string, assigneeId?: string) => {
     // this is also what refreshes the list when returning to the screen
     refetchInterval: 5000
   });
+
+  useSyncNotification(query.data, TASK_KEYS.list({ project: projectId, assignee: assigneeId }));
+
+  return query;
 };
 
 export const useTask = (taskId?: string) => {

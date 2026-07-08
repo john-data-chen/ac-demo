@@ -25,6 +25,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 import { useDeleteProject, useUpdateProject } from "@/lib/api/projects/queries";
+import { markSkipNext } from "@/lib/hooks/sync-state";
 import { useWorkspaceStore } from "@/stores/workspace-store";
 import { projectSchema } from "@/types/projectForm";
 
@@ -60,6 +61,7 @@ export function ProjectActions({ id, title, description, ownerId }: ProjectActio
     }
 
     try {
+      markSkipNext("projects");
       await updateProject(
         id,
         values.title,
@@ -159,6 +161,7 @@ export function ProjectActions({ id, title, description, ownerId }: ProjectActio
               onClick={async () => {
                 setShowDeleteDialog(false);
                 try {
+                  markSkipNext("projects");
                   await removeProject(id, async (projectId) =>
                     deleteProjectMutation.mutateAsync(projectId)
                   );

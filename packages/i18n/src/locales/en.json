@@ -152,7 +152,8 @@
     "edit": "Edit",
     "save": "Save",
     "create": "Create",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "synced": "Synced"
   },
   "user": {
     "logOut": "Log out"

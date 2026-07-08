@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 import { useCreateProject } from "@/lib/api/projects/queries";
+import { markSkipNext } from "@/lib/hooks/sync-state";
 import { useWorkspaceStore } from "@/stores/workspace-store";
 import { projectSchema } from "@/types/projectForm";
 
@@ -46,6 +47,7 @@ export default function NewProjectDialog({ onProjectAdd }: NewProjectDialogProps
 
   const handleSubmit = async (data: ProjectFormData) => {
     try {
+      markSkipNext("projects");
       const projectId = await addProject(data.title, data.description || "", async (projectData) =>
         createProjectMutation.mutateAsync(projectData)
       );

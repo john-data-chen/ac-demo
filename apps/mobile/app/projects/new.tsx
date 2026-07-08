@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { ActivityIndicator, KeyboardAvoidingView, Platform, Alert } from "react-native";
 
 import { useCreateProject, useUpdateProject, useProjects } from "@/hooks/use-projects";
+import { markSkipNext } from "@/lib/sync-state";
 import { View, Text, TextInput, Pressable, ScrollView } from "@/lib/tw";
 import { useAuthStore } from "@/stores/auth";
 
@@ -38,6 +39,10 @@ export default function ProjectFormScreen() {
     }
 
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+
+    // Mark to skip sync notification since this is a local change
+    const projectQueryKey = JSON.stringify(["projects", "list", { boardId }]);
+    markSkipNext(projectQueryKey);
 
     if (isEditMode && projectId) {
       updateProjectMutation.mutate(

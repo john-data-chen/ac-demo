@@ -6,6 +6,7 @@ import { Alert } from "react-native";
 
 import { useDeleteProject } from "@/hooks/use-projects";
 import { useTasks } from "@/hooks/use-tasks";
+import { markSkipNext } from "@/lib/sync-state";
 import { View, Text, Pressable } from "@/lib/tw";
 
 import { SortableTaskList } from "./sortable-task-list";
@@ -33,6 +34,7 @@ export function ProjectColumn({ project, boardId, statusFilter }: ProjectColumnP
           text: t("common.delete") || "Delete",
           style: "destructive",
           onPress: () => {
+            markSkipNext(JSON.stringify(["projects", "list", { boardId }]));
             deleteProjectMutation.mutate({ id: project._id, boardId });
           }
         }

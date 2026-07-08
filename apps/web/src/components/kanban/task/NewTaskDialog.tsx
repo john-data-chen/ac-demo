@@ -16,6 +16,7 @@ import { z } from "zod";
 
 import { TaskForm } from "@/components/kanban/task/TaskForm";
 import { useCreateTask } from "@/lib/api/tasks/queries";
+import { markSkipNext } from "@/lib/hooks/sync-state";
 import { useWorkspaceStore } from "@/stores/workspace-store";
 import { TaskFormSchema } from "@/types/taskForm";
 
@@ -42,6 +43,7 @@ export default function NewTaskDialog({ projectId }: NewTaskDialogProps) {
     );
     const nextOrder = lastOrder + 1;
 
+    markSkipNext(`tasks-${projectId}`);
     await addTask(
       projectId,
       values.title,

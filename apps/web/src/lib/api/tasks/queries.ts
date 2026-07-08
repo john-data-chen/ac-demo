@@ -156,85 +156,92 @@ export const useUpdateTask = () => {
       const taskId = updatedTask.id;
       const taskQueryKey = TASK_KEYS.detail(taskId);
 
-      // Cancel any outgoing refetches
+      // Cancel any outgoing refetches for both detail and lists
       await queryClient.cancelQueries({ queryKey: taskQueryKey });
+      await queryClient.cancelQueries({ queryKey: TASK_KEYS.lists() });
 
-      // Snapshot the previous values
+      // Snapshot the previous values for rollback
       const previousTask = queryClient.getQueryData<Task>(taskQueryKey);
+      const previousLists = queryClient.getQueriesData<Task[]>({ queryKey: TASK_KEYS.lists() });
 
-      // Optimistically update to the new value
-      if (previousTask) {
-        // Create a clean update object with only the fields that were actually updated
-        const updateFields: Partial<Task> = {};
+      // Build updateFields from whatever cached source is available:
+      // prefer the detail cache; fall back to finding the task inside any list.
+      const sourceTask =
+        previousTask ??
+        previousLists.flatMap(([, tasks]) => tasks ?? []).find((task) => task._id === taskId);
 
-        // Only include fields that were actually provided in the update
-        if ("title" in updatedTask) {
-          updateFields.title = updatedTask.title;
-        }
-        if ("description" in updatedTask) {
-          updateFields.description = updatedTask.description;
-        }
-        if ("status" in updatedTask) {
-          updateFields.status = updatedTask.status;
-        }
-        if ("dueDate" in updatedTask) {
-          updateFields.dueDate = updatedTask.dueDate;
-        }
+      // Create a clean update object with only the fields that were actually updated
+      const updateFields: Partial<Task> = {};
 
-        // Handle assignee update - we need to include all required UserInfo fields
-        if ("assigneeId" in updatedTask) {
-          if (updatedTask.assigneeId) {
-            // If we have an assigneeId, we need to get the user info from the previous task
-            // or from the current assignee if it exists
-            const previousTask = queryClient.getQueryData<Task>(taskQueryKey);
-            const previousAssignee = previousTask?.assignee;
+      // Only include fields that were actually provided in the update
+      if ("title" in updatedTask) {
+        updateFields.title = updatedTask.title;
+      }
+      if ("description" in updatedTask) {
+        updateFields.description = updatedTask.description;
+      }
+      if ("status" in updatedTask) {
+        updateFields.status = updatedTask.status;
+      }
+      if ("dueDate" in updatedTask) {
+        updateFields.dueDate = updatedTask.dueDate;
+      }
 
-            if (previousAssignee && previousAssignee._id === updatedTask.assigneeId) {
-              // If the assignee is the same, keep the existing user info
-              updateFields.assignee = { ...previousAssignee };
-            } else {
-              // Otherwise, we need to fetch the user info
-              // For now, we'll just include the ID and placeholder values for required fields
-              // The next data fetch will update this with the full user info
-              updateFields.assignee = {
-                _id: updatedTask.assigneeId,
-                name: "Loading...",
-                email: "loading@example.com"
-              };
-            }
+      // Handle assignee update - we need to include all required UserInfo fields
+      if ("assigneeId" in updatedTask) {
+        if (updatedTask.assigneeId) {
+          const previousAssignee = sourceTask?.assignee;
+
+          if (previousAssignee && previousAssignee._id === updatedTask.assigneeId) {
+            // If the assignee is the same, keep the existing user info
+            updateFields.assignee = { ...previousAssignee };
           } else {
-            // If assigneeId is null or undefined, set assignee to undefined
-            updateFields.assignee = undefined;
+            // Otherwise, we need to fetch the user info
+            // For now, we'll just include the ID and placeholder values for required fields
+            // The next data fetch will update this with the full user info
+            updateFields.assignee = {
+              _id: updatedTask.assigneeId,
+              name: "Loading...",
+              email: "loading@example.com"
+            };
           }
+        } else {
+          // If assigneeId is null or undefined, set assignee to undefined
+          updateFields.assignee = undefined;
         }
+      }
 
+      // Update detail cache only if it was already populated
+      if (previousTask) {
         // Keep the server's updatedAt: the mutation sends it as the
         // optimistic-lock token, so fabricating one here would self-409.
-        const newTask = {
+        queryClient.setQueryData(taskQueryKey, {
           ...previousTask,
           ...updateFields,
           _id: taskId // Ensure _id is always set
-        };
-
-        // Update the task in the cache
-        queryClient.setQueryData(taskQueryKey, newTask);
-
-        // Also update the task in any lists it might be in
-        queryClient.setQueriesData({ queryKey: TASK_KEYS.lists() }, (old: Task[] | undefined) => {
-          if (!old) {
-            return old;
-          }
-          return old.map((task) => (task._id === taskId ? { ...task, ...updateFields } : task));
         });
       }
 
-      return { previousTask };
+      // Always update lists — board updates must be instant regardless of detail cache state
+      queryClient.setQueriesData({ queryKey: TASK_KEYS.lists() }, (old: Task[] | undefined) => {
+        if (!old) {
+          return old;
+        }
+        return old.map((task) => (task._id === taskId ? { ...task, ...updateFields } : task));
+      });
+
+      return { previousTask, previousLists };
     },
 
     // If the mutation fails, use the context returned from onMutate to roll back
     onError: (err, updatedTask, context) => {
       if (context?.previousTask) {
         queryClient.setQueryData(TASK_KEYS.detail(updatedTask.id), context.previousTask);
+      }
+      if (context?.previousLists) {
+        context.previousLists.forEach(([queryKey, data]) => {
+          queryClient.setQueryData(queryKey, data);
+        });
       }
       if ((err as Error & { status?: number }).status === 409) {
         // onSettled below refetches, so the board heals itself

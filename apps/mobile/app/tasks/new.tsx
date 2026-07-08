@@ -176,10 +176,8 @@ export default function NewTaskScreen() {
                   mode="date"
                   display="inline"
                   minimumDate={new Date()}
-                  onChange={(event, date) => {
-                    if (date) {
-                      setDueDate(date);
-                    }
+                  onValueChange={(event, date) => {
+                    setDueDate(date);
                   }}
                 />
                 <Pressable
@@ -197,11 +195,12 @@ export default function NewTaskScreen() {
                 mode="date"
                 display="default"
                 minimumDate={new Date()}
-                onChange={(event, date) => {
+                onValueChange={(event, date) => {
                   setShowDatePicker(false);
-                  if (date) {
-                    setDueDate(date);
-                  }
+                  setDueDate(date);
+                }}
+                onDismiss={() => {
+                  setShowDatePicker(false);
                 }}
               />
             ))}

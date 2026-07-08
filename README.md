@@ -309,11 +309,11 @@ Boards, projects, and tasks refresh every **5 seconds** on both platforms, and c
 
 **Why polling instead of WebSocket/SSE — the trade-off:**
 
-| Option                        | Verdict | Reasoning                                                                                                                              |
-| ----------------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| WebSocket                     | ✗       | Vercel Serverless Functions cannot hold long-lived connections on any plan                                                             |
-| Server-Sent Events            | ✗       | Constrained by function max duration; connections drop frequently on the free tier                                                     |
-| Third-party push (Ably, etc.) | Later   | Real push at scale, but adds a dependency, an account, and a failure mode — not worth it for the current scale                          |
+| Option                        | Verdict | Reasoning                                                                                                                           |
+| ----------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| WebSocket                     | ✗       | Vercel Serverless Functions cannot hold long-lived connections on any plan                                                          |
+| Server-Sent Events            | ✗       | Constrained by function max duration; connections drop frequently on the free tier                                                  |
+| Third-party push (Ably, etc.) | Later   | Real push at scale, but adds a dependency, an account, and a failure mode — not worth it for the current scale                      |
 | **Polling (5s)**              | ✓       | Zero new dependencies; ~12 requests/min per open client ≈ 345k invocations/month for 2 daily users vs the 1M/month Vercel Hobby cap |
 
 **Known limits (deliberate):** 5 seconds of staleness between polls; `PATCH /tasks/{id}/move` (drag-and-drop reordering) remains last-write-wins. The upgrade path when scale demands it: swap the polling layer for a managed realtime channel (Ably / Supabase Realtime) — the 409 conflict handling stays unchanged.
@@ -340,7 +340,7 @@ Boards, projects, and tasks refresh every **5 seconds** on both platforms, and c
 AGENTS.md                   # AI guidelines (symlink it when your tool needs specific file name such as CLAUDE.md)
 .agents/                    # AI skills
 └── skills/                 # Agent skills
-ai_docs/                    # AI documentation
+ai-docs/                    # AI documentation
 ├── api-context.md          # API project context & development constraints (loaded on demand)
 └── mobile-context.md       # Mobile app context, architecture & pitfalls (loaded on demand)
 apps/
@@ -542,8 +542,8 @@ This is an example of how to use prompts and skills in Claude Code, you should c
 - Create a folder named `.claude`
 - Copy skills you need from `.agents/skills/` to `.claude/skills/`
 - Copy or create a symbolic link of `AGENTS.md` to your AI tool's context file location
-  | AI Tool | Target Path |
-  | ----------- | ------------------- |
+  | AI Tool     | Target Path               |
+  | ----------- | ------------------------- |
   | Claude Code | `[root-folder]/CLAUDE.md` |
 - Restart the Claude Code or other AI tools
 

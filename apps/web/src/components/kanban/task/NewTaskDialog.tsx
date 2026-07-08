@@ -43,6 +43,7 @@ export default function NewTaskDialog({ projectId }: NewTaskDialogProps) {
     );
     const nextOrder = lastOrder + 1;
 
+    markSkipNext("projects");
     markSkipNext(`tasks-${projectId}`);
     await addTask(
       projectId,

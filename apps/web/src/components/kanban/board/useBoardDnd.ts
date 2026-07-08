@@ -210,6 +210,11 @@ export function useBoardDnd(
       }
 
       try {
+        markSkipNext("projects");
+        markSkipNext(`tasks-${currentProjectId}`);
+        if (originalProject && originalProject._id !== currentProjectId) {
+          markSkipNext(`tasks-${originalProject._id}`);
+        }
         await taskApi.moveTask(movedTask._id, currentProjectId, currentIdx);
         toast.success(`Task "${movedTask.title}" moved successfully`);
         originalProjects.current = null;

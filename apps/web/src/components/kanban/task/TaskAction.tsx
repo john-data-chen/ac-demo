@@ -125,6 +125,7 @@ export function TaskActions({
       const { title, description, status, dueDate, assignee } = values;
 
       // The current user ID is now handled by the useUpdateTask hook
+      markSkipNext("projects");
       markSkipNext(`tasks-${projectId}`);
       await updateTaskMutation.mutateAsync(
         {
@@ -250,6 +251,7 @@ export function TaskActions({
       setIsDeleted(true);
 
       // 5. Execute the delete mutation
+      markSkipNext("projects");
       markSkipNext(`tasks-${projectId}`);
       await deleteTaskMutation.mutateAsync(id, {
         onSuccess: async () => {

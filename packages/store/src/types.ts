@@ -15,8 +15,8 @@ export interface User {
   _id: string;
   email: string;
   name: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface UserInfo {
@@ -37,8 +37,8 @@ export interface BoardDocument {
   owner: string;
   members: string[];
   projects: string[];
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export enum TaskStatus {
@@ -60,8 +60,8 @@ export interface Task {
   creator: UserInfo;
   lastModifier: UserInfo;
   orderInProject?: number;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
   _deleted?: boolean;
 }
 
@@ -72,8 +72,8 @@ export interface Board {
   owner: string | UserInfo;
   members: UserInfo[];
   projects: Project[];
-  createdAt: Date | string;
-  updatedAt: Date | string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface CreateTaskInput {

@@ -17,6 +17,12 @@ export default function BoardsScreen() {
   const { data, isLoading, refetch, isRefetching } = useBoards();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<FilterType>("all");
+  const [isManualRefresh, setIsManualRefresh] = useState(false);
+
+  const handleRefresh = useCallback(() => {
+    setIsManualRefresh(true);
+    refetch().finally(() =>{  setIsManualRefresh(false); });
+  }, [refetch]);
 
   const handleSearchChange = useCallback((text: string) => {
     setSearch(text);
@@ -52,7 +58,10 @@ export default function BoardsScreen() {
       className="flex-1 bg-background"
       contentContainerClassName="px-4 pb-8"
       contentInsetAdjustmentBehavior="automatic"
-      refreshControl=<RefreshControl refreshing={isRefetching} onRefresh={refetch} />
+      refreshControl=<RefreshControl
+        refreshing={isRefetching && isManualRefresh}
+        onRefresh={handleRefresh}
+      />
     >
       <Stack.Screen
         options={{

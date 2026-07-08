@@ -35,13 +35,14 @@ export default function BoardDetailScreen() {
   } = useProjects(boardId);
   const { t } = useTranslation();
   const [statusFilter, setStatusFilter] = useState<TaskStatus | null>(null);
+  const [isManualRefresh, setIsManualRefresh] = useState(false);
 
   const isLoading = isBoardLoading || isProjectsLoading;
   const isRefetching = isBoardRefetching || isProjectsRefetching;
 
   const handleRefresh = () => {
-    refetchBoard();
-    refetchProjects();
+    setIsManualRefresh(true);
+    Promise.all([refetchBoard(), refetchProjects()]).finally(() =>{  setIsManualRefresh(false); });
   };
 
   const sortedProjects = useMemo(
@@ -179,7 +180,10 @@ export default function BoardDetailScreen() {
           ) : (
             <ScrollView
               contentContainerStyle={{ paddingHorizontal: 12, paddingBottom: 24, gap: 16 }}
-              refreshControl=<RefreshControl refreshing={isRefetching} onRefresh={handleRefresh} />
+              refreshControl=<RefreshControl
+                refreshing={isRefetching && isManualRefresh}
+                onRefresh={handleRefresh}
+              />
             >
               {sortedProjects.map((project) => (
                 <ProjectColumn

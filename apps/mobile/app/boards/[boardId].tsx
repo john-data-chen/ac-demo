@@ -1,7 +1,7 @@
 import { TaskStatus } from "@repo/store";
 import { Image } from "expo-image";
 import { Link, useLocalSearchParams, Stack, useRouter } from "expo-router";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { RefreshControl } from "react-native";
 
@@ -40,10 +40,12 @@ export default function BoardDetailScreen() {
   const isLoading = isBoardLoading || isProjectsLoading;
   const isRefetching = isBoardRefetching || isProjectsRefetching;
 
-  const handleRefresh = () => {
+  const handleRefresh = useCallback(() => {
     setIsManualRefresh(true);
-    Promise.all([refetchBoard(), refetchProjects()]).finally(() =>{  setIsManualRefresh(false); });
-  };
+    Promise.all([refetchBoard(), refetchProjects()]).finally(() => {
+      setIsManualRefresh(false);
+    });
+  }, [refetchBoard, refetchProjects]);
 
   const sortedProjects = useMemo(
     () => [...projects].sort((a, b) => (a.orderInBoard || 0) - (b.orderInBoard || 0)),

@@ -16,6 +16,6 @@
   },
   "devDependencies": {
     "@repo/tsconfig": "workspace:*",
-    "@typescript/native-preview": "catalog:"
+    "typescript": "catalog:"
   }
 }

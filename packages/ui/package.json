@@ -48,7 +48,7 @@
     "@storybook/react": "^10.4.6",
     "@storybook/react-vite": "^10.4.6",
     "@storybook/test-runner": "0.24.4",
-    "@typescript/native-preview": "catalog:",
+    "typescript": "catalog:",
     "playwright": "1.61.1",
     "playwright-core": "1.61.1",
     "storybook": "^10.4.6"

@@ -215,7 +215,7 @@ def find_all(
             q = q.filter(Task.assignee_id == uuid.UUID(assigneeId))
         except ValueError:
             pass
-    tasks = q.all()
+    tasks = q.order_by(Task.order_in_project).all()
     return [_task_out(t) for t in tasks]
 
 

@@ -21,7 +21,9 @@ export default function BoardsScreen() {
 
   const handleRefresh = useCallback(() => {
     setIsManualRefresh(true);
-    refetch().finally(() =>{  setIsManualRefresh(false); });
+    refetch().finally(() => {
+      setIsManualRefresh(false);
+    });
   }, [refetch]);
 
   const handleSearchChange = useCallback((text: string) => {

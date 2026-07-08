@@ -19,7 +19,9 @@ export const useProjects = (boardId?: string) => {
       }
       return projectApi.getProjects(boardId);
     },
-    enabled: !!boardId
+    enabled: !!boardId,
+    // ponytail: 5s polling = near-real-time sync across users
+    refetchInterval: 5000
   });
 };
 

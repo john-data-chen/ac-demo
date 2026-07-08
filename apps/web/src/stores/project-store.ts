@@ -18,31 +18,40 @@ export const createProjectSlice: StateCreator<
     set({ projects });
   },
 
-  fetchProjects: async (boardId: string) => {
+  // silent = background poll: no skeleton, and errors keep the current view
+  fetchProjects: async (boardId: string, silent = false) => {
     if (!boardId) {
       return;
     }
 
-    set({ isLoadingProjects: true });
+    if (!silent) {
+      set({ isLoadingProjects: true });
+    }
 
     try {
       const projects = await projectApi.getProjects(boardId);
 
       if (projects) {
-        set({
+        set((state) => ({
           projects: projects.map((project) => ({
             ...project,
-            tasks: []
+            // Keep tasks each column already loaded so a background refresh
+            // doesn't blank the board (columns poll their own tasks)
+            tasks: state.projects.find((p) => p._id === project._id)?.tasks ?? []
           }))
-        });
-      } else {
+        }));
+      } else if (!silent) {
         set({ projects: [] });
       }
     } catch (error) {
       console.error("Error fetching projects:", error);
-      set({ projects: [] });
+      if (!silent) {
+        set({ projects: [] });
+      }
     } finally {
-      set({ isLoadingProjects: false });
+      if (!silent) {
+        set({ isLoadingProjects: false });
+      }
     }
   },
 

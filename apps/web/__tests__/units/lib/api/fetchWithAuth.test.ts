@@ -138,6 +138,22 @@ describe("fetchWithAuth", () => {
     }
   });
 
+  it("should attach HTTP status to thrown errors (409 conflict)", async () => {
+    (global.fetch as any).mockResolvedValue({
+      ok: false,
+      status: 409,
+      json: async () => ({ message: "Task was modified by someone else. Refresh and retry." })
+    });
+
+    try {
+      await fetchWithAuth(mockUrl);
+      expect.fail("Should have thrown");
+    } catch (e: any) {
+      expect(e.status).toBe(409);
+      expect(e.message).toContain("modified by someone else");
+    }
+  });
+
   it("should throw error with text body", async () => {
     const errorMsg = "Text error";
     (global.fetch as any).mockResolvedValue({

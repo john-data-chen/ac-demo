@@ -30,6 +30,7 @@ interface BoardProjectProps {
   isBoardOwner: boolean;
   isBoardMember: boolean;
   currentUserId: string;
+  isDragActive?: boolean;
 }
 
 // Memoize the component to prevent unnecessary re-renders
@@ -47,7 +48,8 @@ export const BoardProject = memo(BoardProjectComponent, (prevProps, nextProps) =
     prevProps.project.title === nextProps.project.title &&
     prevProps.project.description === nextProps.project.description &&
     tasksMatch &&
-    prevProps.isOverlay === nextProps.isOverlay
+    prevProps.isOverlay === nextProps.isOverlay &&
+    prevProps.isDragActive === nextProps.isDragActive
   );
 });
 
@@ -60,7 +62,8 @@ function BoardProjectComponent({
   isOverlay = false,
   isBoardOwner,
   isBoardMember,
-  currentUserId
+  currentUserId,
+  isDragActive = false
 }: BoardProjectProps) {
   const { filter, fetchTasksByProject } = useWorkspaceStore();
   const t = useTranslations("kanban.project");
@@ -131,6 +134,19 @@ function BoardProjectComponent({
   useEffect(() => {
     loadTasks();
   }, [loadTasks]);
+
+  // ponytail: 5s polling = near-real-time sync; swap for WebSocket/SSE if
+  // the backend ever leaves Vercel serverless. Paused while a drag is active
+  // so a refetch can't yank cards mid-drag.
+  useEffect(() => {
+    if (isDragActive) {
+      return;
+    }
+    const id = setInterval(loadTasks, 5000);
+    return () => {
+      clearInterval(id);
+    };
+  }, [loadTasks, isDragActive]);
 
   const filteredTasks = useMemo(() => {
     if (!filter.status || !tasks?.length) {

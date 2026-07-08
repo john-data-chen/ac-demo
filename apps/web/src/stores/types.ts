@@ -29,7 +29,7 @@ export interface ProjectSliceState {
   projects: Project[];
   isLoadingProjects: boolean;
   setProjects: (projects: Project[]) => void;
-  fetchProjects: (boardId: string) => Promise<void>;
+  fetchProjects: (boardId: string, silent?: boolean) => Promise<void>;
   fetchTasksByProject: (projectId: string) => Promise<Task[]>;
   addProject: (
     title: string,

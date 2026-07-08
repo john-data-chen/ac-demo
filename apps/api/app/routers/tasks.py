@@ -6,6 +6,7 @@ from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
+from sqlalchemy import update
 from sqlalchemy.orm import Session
 
 from app.auth import get_current_user
@@ -116,6 +117,9 @@ class UpdateTaskBody(BaseModel):
     assigneeId: str | None = None
     lastModifier: str | None = None
     orderInProject: int | None = None
+    # Optimistic lock: the updatedAt the client last saw. Optional so old
+    # clients keep working; when present and stale, the update is rejected.
+    updatedAt: str | None = None
 
 
 class MoveTaskBody(BaseModel):
@@ -231,19 +235,21 @@ def update_task(
     task = _get_task_or_404(task_id, db)
     _check_task_permission(task, current_user)
 
-    if body.title is not None:
-        task.title = body.title
-    if body.description is not None:
-        task.description = body.description
-    if body.status is not None:
-        task.status = body.status
+    # Build the set of column values to apply
     try:
+        values: dict = {"last_modifier_id": current_user.id}
+        if body.title is not None:
+            values["title"] = body.title
+        if body.description is not None:
+            values["description"] = body.description
+        if body.status is not None:
+            values["status"] = body.status
         if body.dueDate is not None:
-            task.due_date = datetime.fromisoformat(body.dueDate) if body.dueDate else None
+            values["due_date"] = datetime.fromisoformat(body.dueDate) if body.dueDate else None
         if body.orderInProject is not None:
-            task.order_in_project = body.orderInProject
+            values["order_in_project"] = body.orderInProject
         if "assigneeId" in body.model_dump(exclude_unset=True):
-            task.assignee_id = uuid.UUID(body.assigneeId) if body.assigneeId else None
+            values["assignee_id"] = uuid.UUID(body.assigneeId) if body.assigneeId else None
     except ValueError:
         raise HTTPException(
             status_code=400,
@@ -253,7 +259,39 @@ def update_task(
                 "error": "Bad Request",
             },
         )
-    task.last_modifier_id = current_user.id
+
+    # opt-in optimistic lock: perform the UPDATE with a WHERE on updated_at.
+    # If rowcount == 0 the timestamp no longer matches — another writer won.
+    # This check is atomic at the DB level, unlike the previous in-memory compare.
+    if body.updatedAt is not None:
+        try:
+            expected_ts = datetime.fromisoformat(body.updatedAt)
+        except ValueError:
+            raise HTTPException(
+                status_code=400,
+                detail={
+                    "statusCode": 400,
+                    "message": "Invalid updatedAt format",
+                    "error": "Bad Request",
+                },
+            )
+        stmt = (
+            update(Task).where(Task.id == task.id, Task.updated_at == expected_ts).values(**values)
+        )
+        result = db.execute(stmt)
+        if result.rowcount == 0:
+            raise HTTPException(
+                status_code=409,
+                detail={
+                    "statusCode": 409,
+                    "message": "Task was modified by someone else. Refresh and retry.",
+                    "error": "Conflict",
+                },
+            )
+    else:
+        # No optimistic lock — apply values directly via ORM
+        for attr, val in values.items():
+            setattr(task, attr, val)
 
     db.commit()
     db.refresh(task)

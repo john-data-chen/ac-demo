@@ -82,6 +82,76 @@ describe("workspace-store - Project actions", () => {
       expect(projectApi.getProjects).not.toHaveBeenCalled();
     });
 
+    it("should preserve loaded tasks and skip skeleton on silent fetch (polling)", async () => {
+      const { projectApi } = await import("@/lib/api/projectApi");
+      const existingTask = { _id: "task-1", title: "Loaded task" };
+      useWorkspaceStore.setState({
+        projects: [
+          {
+            _id: "project-1",
+            title: "Old Title",
+            description: "",
+            board: "board-1",
+            owner: "user-1",
+            members: [],
+            orderInBoard: 0,
+            tasks: [existingTask],
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+          } as unknown as Project
+        ]
+      });
+
+      let loadingDuringFetch: boolean | null = null;
+      vi.mocked(projectApi.getProjects).mockImplementation(async () => {
+        loadingDuringFetch = useWorkspaceStore.getState().isLoadingProjects;
+        return [
+          {
+            _id: "project-1",
+            title: "Renamed by someone else",
+            description: "",
+            board: "board-1",
+            owner: "user-1",
+            members: [],
+            orderInBoard: 0,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+          }
+        ] as unknown as Project[];
+      });
+
+      await useWorkspaceStore.getState().fetchProjects("board-1", true);
+
+      const state = useWorkspaceStore.getState();
+      expect(loadingDuringFetch).toBe(false); // no skeleton flicker
+      expect(state.projects[0].title).toBe("Renamed by someone else");
+      expect(state.projects[0].tasks).toEqual([existingTask]); // tasks kept
+    });
+
+    it("should keep current projects when a silent fetch fails", async () => {
+      const { projectApi } = await import("@/lib/api/projectApi");
+      const existing = [
+        {
+          _id: "project-1",
+          title: "Project 1",
+          description: "",
+          board: "board-1",
+          owner: "user-1",
+          members: [],
+          orderInBoard: 0,
+          tasks: [],
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        } as unknown as Project
+      ];
+      useWorkspaceStore.setState({ projects: existing });
+      vi.mocked(projectApi.getProjects).mockRejectedValue(new Error("network down"));
+
+      await useWorkspaceStore.getState().fetchProjects("board-1", true);
+
+      expect(useWorkspaceStore.getState().projects).toEqual(existing);
+    });
+
     it("should add a new project", async () => {
       const mockProject: Project = {
         _id: "project-new",

@@ -71,7 +71,9 @@ async function handleErrorResponse(response: Response): Promise<never> {
       errorMessage = `Request failed with status ${response.status}`;
     }
   }
-  throw new Error(errorMessage);
+  const error = new Error(errorMessage) as Error & { status: number };
+  error.status = response.status;
+  throw error;
 }
 
 async function handleSuccessResponse<T>(

@@ -13,7 +13,7 @@
 
 |                                                     Web                                                     |                                                           Mobile                                                            |
 | :---------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------: |
-| <img src="./apps/web/public/assets/Screen_Recording.gif" alt="Web demo recording" width="270" height="579"> | <img src="./apps/mobile/assets/images/simulator-screenshot.png" alt="Mobile simulator screenshot" width="270" height="579"> |
+| <img src="./apps/web/public/assets/Screen_Recording.gif" alt="Web demo recording" width="270" height="579"> | <img src="./apps/mobile/assets/images/simulator-screenshot.jpg" alt="Mobile simulator screenshot" width="270" height="579"> |
 
 A production-grade Kanban application demonstrating monorepo architecture, test-driven development, and modern tooling practices. Originally built as a TypeScript Turborepo ([turborepo-starter-kit](https://github.com/john-data-chen/turborepo-starter-kit)), then strategically re-architected from Nest.JS to Python FastAPI by AI-assisted development.
 

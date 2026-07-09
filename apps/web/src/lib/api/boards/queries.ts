@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
+import { markSkipNext } from "@/lib/hooks/sync-state";
 import { useWorkspaceStore } from "@/stores/workspace-store";
 import { BOARD_KEYS } from "@/types/boardApi";
 
@@ -39,6 +40,7 @@ export const useCreateBoard = () => {
 
   return useMutation({
     mutationFn: boardApi.createBoard,
+    onMutate: () =>{  markSkipNext("boards"); },
     onSuccess: () => {
       // Invalidate the boards list query to refetch
       queryClient.invalidateQueries({
@@ -57,6 +59,7 @@ export const useUpdateBoard = () => {
       ...updates
     }: { id: string } & Parameters<typeof boardApi.updateBoard>[1]) =>
       boardApi.updateBoard(id, updates),
+    onMutate: () =>{  markSkipNext("boards"); },
     onSuccess: (updatedBoard) => {
       // Invalidate both the list and the specific board
       queryClient.invalidateQueries({
@@ -74,6 +77,7 @@ export const useDeleteBoard = () => {
 
   return useMutation({
     mutationFn: boardApi.deleteBoard,
+    onMutate: () =>{  markSkipNext("boards"); },
     onSuccess: (_, boardId) => {
       // Invalidate the boards list
       queryClient.invalidateQueries({

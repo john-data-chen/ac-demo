@@ -17,8 +17,8 @@ function transformUserData(user: ApiUser): User {
     _id: user._id,
     name: user.name,
     email: user.email,
-    createdAt: new Date(user.createdAt),
-    updatedAt: new Date(user.updatedAt)
+    createdAt: user.createdAt,
+    updatedAt: user.updatedAt
   };
 }
 

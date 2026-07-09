@@ -12,15 +12,31 @@ import {
 } from "@repo/ui/components/sidebar";
 import { HomeIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useEffect } from "react";
 
 import { Icons } from "@/components/layout/Icons";
 import { useBoards } from "@/hooks/useBoards";
 import { Link, usePathname } from "@/i18n/navigation";
+import { useSyncNotification } from "@/lib/hooks/use-sync-notification";
 
 export default function AppSidebar() {
   const t = useTranslations("sidebar");
   const pathname = usePathname();
   const { myBoards, teamBoards, loading } = useBoards();
+
+  // ponytail: sidebar is the single always-mounted useBoards consumer, so toast
+  // board-metadata sync here — not in the shared hook (4 consumers = 4 toasts).
+  const { compareAndNotify } = useSyncNotification();
+  useEffect(() => {
+    compareAndNotify(
+      "boards",
+      [...myBoards, ...teamBoards].map((b) => ({
+        _id: b._id,
+        title: b.title,
+        description: b.description
+      }))
+    );
+  }, [myBoards, teamBoards, compareAndNotify]);
 
   return (
     <Sidebar collapsible="offcanvas">

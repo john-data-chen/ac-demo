@@ -31,8 +31,8 @@ describe("taskApi", () => {
     creator: mockUserInfo,
     lastModifier: mockUserInfo,
     orderInProject: 0,
-    createdAt: new Date(),
-    updatedAt: new Date()
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
   };
 
   beforeEach(() => {

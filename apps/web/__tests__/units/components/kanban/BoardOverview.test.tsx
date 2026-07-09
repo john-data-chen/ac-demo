@@ -102,7 +102,7 @@ describe("BoardOverview", () => {
         _id: "user-2",
         name: "Jane Doe",
         email: "jane@example.com",
-        createdAt: new Date()
+        createdAt: new Date().toISOString()
       } as any,
       members: [],
       projects: [],

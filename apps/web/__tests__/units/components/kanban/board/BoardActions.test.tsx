@@ -199,7 +199,7 @@ describe("BoardActions", () => {
         _id: "user-1",
         name: "John",
         email: "john@example.com",
-        createdAt: new Date()
+        createdAt: new Date().toISOString()
       } as any
     };
     render(<BoardActions board={boardWithObjectOwner} />);

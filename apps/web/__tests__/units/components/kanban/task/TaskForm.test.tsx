@@ -77,15 +77,15 @@ vi.mock("@/hooks/useTaskForm", () => ({
         _id: "user-1",
         name: "John Doe",
         email: "john@example.com",
-        createdAt: new Date(),
-        updatedAt: new Date()
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
       },
       {
         _id: "user-2",
         name: "Jane Smith",
         email: "jane@example.com",
-        createdAt: new Date(),
-        updatedAt: new Date()
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
       }
     ],
     searchQuery: "",
@@ -216,15 +216,15 @@ describe("TaskForm", () => {
           _id: "user-1",
           name: "John Doe",
           email: "john@example.com",
-          createdAt: new Date(),
-          updatedAt: new Date()
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
         },
         {
           _id: "user-2",
           name: "Jane Smith",
           email: "jane@example.com",
-          createdAt: new Date(),
-          updatedAt: new Date()
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
         }
       ],
       searchQuery: "",

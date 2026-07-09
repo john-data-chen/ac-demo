@@ -23,7 +23,7 @@ export const createTaskSlice: StateCreator<
     _orderInProject?: number
   ) => {
     try {
-      const { userId, currentBoardId, projects, fetchProjects } = get();
+      const { userId, currentBoardId, projects, fetchTasksByProject } = get();
       if (!userId || !currentBoardId) {
         throw new Error("User not authenticated or no board selected");
       }
@@ -45,7 +45,9 @@ export const createTaskSlice: StateCreator<
 
       await createTask(taskInput);
 
-      await fetchProjects(currentBoardId);
+      // Refresh only this column's tasks. A full fetchProjects() flips
+      // isLoadingProjects and blanks the whole board to a skeleton (flash).
+      await fetchTasksByProject(projectId);
     } catch (error) {
       console.error("Error adding task:", error);
       throw error;

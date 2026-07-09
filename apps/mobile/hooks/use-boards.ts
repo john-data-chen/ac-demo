@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { boardApi, type UpdateBoardInput } from "@/lib/api/board-api";
+import { useAuthStore } from "@/stores/auth";
 
 import { useSyncNotification } from "./use-sync-notification";
 
@@ -13,9 +14,12 @@ export const BOARD_KEYS = {
 };
 
 export const useBoards = () => {
+  // Only query once logged in — prevents unauthenticated 401 spam at app launch.
+  const user = useAuthStore((state) => state.user);
   const query = useQuery({
     queryKey: BOARD_KEYS.list(),
     queryFn: async () => boardApi.getBoards(),
+    enabled: !!user,
     retry: 3,
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
     staleTime: 5 * 60 * 1000,
@@ -30,10 +34,11 @@ export const useBoards = () => {
 };
 
 export const useBoard = (boardId?: string) => {
+  const user = useAuthStore((state) => state.user);
   const query = useQuery({
     queryKey: BOARD_KEYS.detail(boardId || ""),
     queryFn: async () => boardApi.getBoardById(boardId || ""),
-    enabled: !!boardId,
+    enabled: !!boardId && !!user,
     refetchInterval: 5000
   });
 

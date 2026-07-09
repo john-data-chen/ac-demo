@@ -9,8 +9,13 @@ import {
   useDeleteBoard
 } from "@/hooks/use-boards";
 import { boardApi } from "@/lib/api/board-api";
+import { useAuthStore } from "@/stores/auth";
 
 import { Wrapper } from "./test-utils";
+
+const login = () => {
+  useAuthStore.getState().setUser({ _id: "u1", email: "a@b.c", name: "A" });
+};
 
 vi.mock("@/lib/api/board-api", () => ({
   boardApi: {
@@ -25,6 +30,7 @@ vi.mock("@/lib/api/board-api", () => ({
 describe("useBoards", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    login();
   });
 
   it("should fetch boards", async () => {
@@ -40,11 +46,20 @@ describe("useBoards", () => {
     expect(result.current.data).toEqual(mockBoards);
     expect(boardApi.getBoards).toHaveBeenCalled();
   });
+
+  it("should not fetch when logged out", () => {
+    useAuthStore.getState().setUser(null);
+    const { result } = renderHook(() => useBoards(), { wrapper: Wrapper });
+
+    expect(result.current.fetchStatus).toBe("idle");
+    expect(boardApi.getBoards).not.toHaveBeenCalled();
+  });
 });
 
 describe("useBoard", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    login();
   });
 
   it("should fetch a single board by id", async () => {
@@ -76,7 +91,7 @@ describe("useCreateBoard", () => {
     const { result } = renderHook(() => useCreateBoard(), { wrapper: Wrapper });
 
     await act(async () => {
-      result.current.mutate({ title: "New Board" } as any);
+      result.current.mutate({ title: "New Board" });
     });
 
     await waitFor(() => {
@@ -95,7 +110,7 @@ describe("useUpdateBoard", () => {
     const { result } = renderHook(() => useUpdateBoard(), { wrapper: Wrapper });
 
     await act(async () => {
-      result.current.mutate({ id: "b1", title: "Updated" } as any);
+      result.current.mutate({ id: "b1", title: "Updated" });
     });
 
     await waitFor(() => {
@@ -108,7 +123,7 @@ describe("useUpdateBoard", () => {
 
 describe("useDeleteBoard", () => {
   it("should call boardApi.deleteBoard", async () => {
-    vi.mocked(boardApi.deleteBoard).mockResolvedValue(undefined as any);
+    vi.mocked(boardApi.deleteBoard).mockResolvedValue(undefined);
 
     const { result } = renderHook(() => useDeleteBoard(), { wrapper: Wrapper });
 

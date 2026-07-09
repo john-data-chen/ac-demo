@@ -61,7 +61,7 @@ export function useSyncNotification<T>(
       position: "bottom",
       bottomOffset: 100 // clears the bottom tab bar
     });
-  }, [data, serializedQueryKey, t]);
+  }, [data, serializedQueryKey, t, getComparable]);
 
   const skipNext = useCallback(() => {
     // This is for external callers, but we'll use the module-level function instead

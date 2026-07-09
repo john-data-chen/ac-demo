@@ -6,7 +6,8 @@ import {
   useBoard,
   useCreateBoard,
   useUpdateBoard,
-  useDeleteBoard
+  useDeleteBoard,
+  boardListComparable
 } from "@/hooks/use-boards";
 import { boardApi } from "@/lib/api/board-api";
 import { useAuthStore } from "@/stores/auth";
@@ -53,6 +54,34 @@ describe("useBoards", () => {
 
     expect(result.current.fetchStatus).toBe("idle");
     expect(boardApi.getBoards).not.toHaveBeenCalled();
+  });
+});
+
+describe("boardListComparable", () => {
+  const makeBoard = (over: Record<string, unknown> = {}) =>
+    ({
+      _id: "b1",
+      title: "Board 1",
+      description: "d",
+      owner: { _id: "u1", name: "A", email: "a@b.c" },
+      members: [{ _id: "u1", name: "A", email: "a@b.c" }],
+      projects: [{ _id: "p1", title: "Proj 1", tasks: [] }],
+      ...over
+    }) as any;
+
+  const sig = (b: any) => JSON.stringify(boardListComparable({ myBoards: [b], teamBoards: [] }));
+
+  it("ignores nested project title changes", () => {
+    const a = makeBoard();
+    const b = makeBoard({ projects: [{ _id: "p1", title: "Renamed", tasks: [{ _id: "t1" }] }] });
+    expect(sig(a)).toBe(sig(b));
+  });
+
+  it("reflects project add/remove and board-level field changes", () => {
+    const base = makeBoard();
+    expect(sig(base)).not.toBe(sig(makeBoard({ title: "Changed" })));
+    expect(sig(base)).not.toBe(sig(makeBoard({ projects: [{ _id: "p1" }, { _id: "p2" }] })));
+    expect(sig(base)).not.toBe(sig(makeBoard({ members: [] })));
   });
 });
 

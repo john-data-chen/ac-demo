@@ -1,9 +1,27 @@
+import type { Board } from "@repo/store";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { boardApi, type UpdateBoardInput } from "@/lib/api/board-api";
 import { useAuthStore } from "@/stores/auth";
 
 import { useSyncNotification } from "./use-sync-notification";
+
+// Board-level signature only: the list toast should fire on board add/remove/
+// rename, description, member and project add/remove — but NOT on nested
+// project/task detail changes (those are detected after opening a board).
+const boardSignature = (b: Board) => ({
+  _id: b._id,
+  title: b.title,
+  description: b.description ?? null,
+  owner: typeof b.owner === "string" ? b.owner : b.owner?._id,
+  members: b.members.map((m) => m._id),
+  projects: b.projects.map((p) => p._id)
+});
+
+export const boardListComparable = (data: { myBoards?: Board[]; teamBoards?: Board[] }) => ({
+  my: (data.myBoards ?? []).map(boardSignature),
+  team: (data.teamBoards ?? []).map(boardSignature)
+});
 
 export const BOARD_KEYS = {
   all: ["boards"] as const,
@@ -28,7 +46,7 @@ export const useBoards = () => {
     refetchInterval: 5000
   });
 
-  useSyncNotification(query.data, BOARD_KEYS.list());
+  useSyncNotification(query.data, BOARD_KEYS.list(), boardListComparable);
 
   return query;
 };

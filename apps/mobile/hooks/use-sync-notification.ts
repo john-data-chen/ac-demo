@@ -4,11 +4,21 @@ import Toast from "react-native-toast-message";
 
 import { shouldSkipAndClear } from "@/lib/sync-state";
 
+const identity = <T>(d: T): unknown => d;
+
 /**
  * Shows a toast when query data changes via polling.
  * No toast on initial load or when data is unchanged.
+ *
+ * `getComparable` narrows what counts as a change — e.g. the board list only
+ * cares about board-level fields, not nested project/task detail. Pass a
+ * stable (module-level) function so it doesn't change identity each render.
  */
-export function useSyncNotification<T>(data: T | undefined, queryKey: readonly unknown[]) {
+export function useSyncNotification<T>(
+  data: T | undefined,
+  queryKey: readonly unknown[],
+  getComparable: (data: T) => unknown = identity
+) {
   const prevDataRef = useRef<string | null>(null);
   const isInitialRef = useRef(true);
   const { t } = useTranslation();
@@ -21,7 +31,7 @@ export function useSyncNotification<T>(data: T | undefined, queryKey: readonly u
       return;
     }
 
-    const current = JSON.stringify(data);
+    const current = JSON.stringify(getComparable(data));
 
     // Skip initial load
     if (isInitialRef.current) {

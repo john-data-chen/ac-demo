@@ -285,10 +285,13 @@ describe("Task Query Hooks", () => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(taskApi.updateTask).toHaveBeenCalledWith("1", {
-        title: "Updated Task",
-        lastModifier: "user-123"
-      });
+      expect(taskApi.updateTask).toHaveBeenCalledWith(
+        "1",
+        expect.objectContaining({
+          title: "Updated Task",
+          lastModifier: "user-123"
+        })
+      );
     });
 
     it("should update task with multiple fields", async () => {

@@ -12,6 +12,7 @@ import {
   useDeleteBoard,
   useUpdateBoard
 } from "@/lib/api/boards/queries";
+import { useWorkspaceStore } from "@/stores/workspace-store";
 import { BOARD_KEYS } from "@/types/boardApi";
 
 // Mock boardApi
@@ -26,6 +27,11 @@ vi.mock("@/lib/api/boardApi", () => ({
   }
 }));
 
+// Mock workspace store so userId is truthy and queries are enabled
+vi.mock("@/stores/workspace-store", () => ({
+  useWorkspaceStore: vi.fn()
+}));
+
 describe("Board Query Hooks", () => {
   let queryClient: QueryClient;
 
@@ -38,6 +44,10 @@ describe("Board Query Hooks", () => {
       }
     });
     vi.clearAllMocks();
+    // Return truthy userId so queries are enabled
+    (useWorkspaceStore as unknown as Mock).mockImplementation(
+      (selector: (s: { userId: string }) => unknown) => selector({ userId: "user-123" })
+    );
   });
 
   const wrapper = ({ children }: { children: React.ReactNode }) => (

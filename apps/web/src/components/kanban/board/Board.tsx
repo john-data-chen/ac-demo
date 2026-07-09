@@ -56,9 +56,14 @@ function BoardContent() {
     }
     const id = setInterval(async () => {
       await fetchProjects(currentBoardId, true);
-      // Notify if projects changed
+      // Notify if project structure changed. Exclude embedded tasks: columns
+      // poll their own tasks and toast for those, so counting task changes here
+      // too would fire a duplicate sync toast.
       const currentProjects = useWorkspaceStore.getState().projects;
-      compareAndNotify("projects", currentProjects);
+      compareAndNotify(
+        "projects",
+        currentProjects.map(({ tasks: _tasks, ...rest }) => rest)
+      );
     }, 5000);
     return () => {
       clearInterval(id);

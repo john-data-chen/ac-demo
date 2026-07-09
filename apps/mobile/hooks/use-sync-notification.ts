@@ -44,11 +44,12 @@ export function useSyncNotification<T>(data: T | undefined, queryKey: readonly u
 
     // Show sync toast (debounced - only one at a time)
     Toast.show({
-      type: "success",
+      type: "sync",
       text1: t("common.synced"),
       visibilityTime: 2000,
       autoHide: true,
-      topOffset: 60
+      position: "bottom",
+      bottomOffset: 100 // clears the bottom tab bar
     });
   }, [data, serializedQueryKey, t]);
 

@@ -82,8 +82,8 @@ describe("BoardProject", () => {
       creator: mockUserInfo,
       lastModifier: mockUserInfo,
       orderInProject: 0,
-      createdAt: new Date(),
-      updatedAt: new Date()
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
     },
     {
       _id: "task-2",
@@ -95,8 +95,8 @@ describe("BoardProject", () => {
       creator: mockUserInfo,
       lastModifier: mockUserInfo,
       orderInProject: 1,
-      createdAt: new Date(),
-      updatedAt: new Date()
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
     },
     {
       _id: "task-3",
@@ -109,8 +109,8 @@ describe("BoardProject", () => {
       lastModifier: mockUserInfo,
       orderInProject: 2,
       _deleted: true,
-      createdAt: new Date(),
-      updatedAt: new Date()
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
     }
   ];
 
@@ -270,7 +270,7 @@ describe("BoardProject", () => {
     vi.mocked(useWorkspaceStore).mockReturnValue({
       filter: { status: TaskStatus.TODO, search: "" },
       fetchTasksByProject: vi.fn()
-    } as any);
+    });
 
     render(
       <BoardProject
@@ -293,7 +293,7 @@ describe("BoardProject", () => {
     vi.mocked(useWorkspaceStore).mockReturnValue({
       filter: { status: null, search: "" },
       fetchTasksByProject: mockFetchTasksByProject
-    } as any);
+    });
 
     render(
       <BoardProject
@@ -318,7 +318,7 @@ describe("BoardProject", () => {
     vi.mocked(useWorkspaceStore).mockReturnValue({
       filter: { status: null, search: "" },
       fetchTasksByProject: mockFetchTasksByProject
-    } as any);
+    });
 
     render(
       <BoardProject

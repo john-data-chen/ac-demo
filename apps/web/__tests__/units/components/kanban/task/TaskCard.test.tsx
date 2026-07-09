@@ -56,8 +56,8 @@ describe("TaskCard", () => {
     board: "board-1",
     dueDate: new Date("2025-12-31"),
     orderInProject: 0,
-    createdAt: new Date(),
-    updatedAt: new Date()
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
   };
 
   beforeEach(() => {
@@ -191,8 +191,8 @@ describe("TaskCard", () => {
       creator: { _id: "user-1", name: "John", email: "john@example.com" },
       lastModifier: { _id: "user-1", name: "John", email: "john@example.com" },
       orderInProject: 0,
-      createdAt: new Date(),
-      updatedAt: new Date()
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
     };
     render(<TaskCard task={minimalTask} />);
     const titles = screen.getAllByText("Minimal Task");

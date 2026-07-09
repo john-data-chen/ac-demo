@@ -31,8 +31,8 @@ const makeTask = (overrides: Partial<Task>): Task => ({
   creator: { _id: "user1", name: "User 1", email: "user1@example.com" },
   lastModifier: { _id: "user1", name: "User 1", email: "user1@example.com" },
   board: "board1",
-  createdAt: new Date(),
-  updatedAt: new Date(),
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
   orderInProject: 0,
   ...overrides
 });

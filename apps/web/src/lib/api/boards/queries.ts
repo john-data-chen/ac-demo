@@ -1,15 +1,20 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
+import { useWorkspaceStore } from "@/stores/workspace-store";
 import { BOARD_KEYS } from "@/types/boardApi";
 
 import { boardApi } from "../boardApi";
 
 export const useBoards = () => {
+  // Only query once logged in — userId is set after session is confirmed.
+  // Prevents unauthenticated 401 spam from the always-mounted sidebar.
+  const userId = useWorkspaceStore((state) => state.userId);
   return useQuery({
     queryKey: BOARD_KEYS.list(),
     queryFn: async () => {
       return boardApi.getBoards();
     },
+    enabled: !!userId,
     retry: 3,
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -20,10 +25,11 @@ export const useBoards = () => {
 };
 
 export const useBoard = (boardId?: string) => {
+  const userId = useWorkspaceStore((state) => state.userId);
   return useQuery({
     queryKey: BOARD_KEYS.detail(boardId || ""),
     queryFn: async () => boardApi.getBoardById(boardId || ""),
-    enabled: !!boardId,
+    enabled: !!boardId && !!userId,
     refetchInterval: 5000
   });
 };

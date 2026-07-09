@@ -113,7 +113,7 @@ function BoardContent() {
           </div>
         </div>
         <BoardContainer>
-          {isLoadingProjects ? (
+          {isLoadingProjects && projects.length === 0 ? (
             <Skeleton className="flex h-[75vh] max-h-[75vh] w-full shrink-0 snap-center flex-col bg-secondary md:w-[380px]" />
           ) : (
             <SortableContext items={projectsId}>

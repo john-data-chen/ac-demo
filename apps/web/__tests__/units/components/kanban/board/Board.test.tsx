@@ -107,8 +107,8 @@ describe("Board", () => {
           creator: mockUserInfo,
           lastModifier: mockUserInfo,
           orderInProject: 0,
-          createdAt: new Date(),
-          updatedAt: new Date()
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
         }
       ],
       createdAt: new Date().toISOString(),
@@ -244,12 +244,20 @@ describe("Board", () => {
     expect(screen.getByTestId("project-project-2")).toBeInTheDocument();
   });
 
-  it("should show loading skeleton when loading projects", () => {
-    setupMocks({ isLoadingProjects: true });
+  it("should show loading skeleton only on initial load (no projects yet)", () => {
+    setupMocks({ isLoadingProjects: true, projects: [] });
 
     const { container } = render(<Board />);
     const skeleton = container.querySelector(".bg-secondary");
     expect(skeleton).toBeInTheDocument();
+  });
+
+  it("should not blank a populated board while refetching", () => {
+    setupMocks({ isLoadingProjects: true });
+
+    render(<Board />);
+    // Columns stay mounted instead of being swapped for a skeleton (no flash)
+    expect(screen.getByTestId("project-project-1")).toBeInTheDocument();
   });
 
   it("should render drag overlay", () => {

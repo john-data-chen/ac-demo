@@ -39,7 +39,7 @@ export const useCreateProject = () => {
       const boardId =
         typeof newProject.board === "string" ? newProject.board : newProject.board?._id;
       if (boardId) {
-        queryClient.invalidateQueries({ queryKey: PROJECT_KEYS.list(boardId) });
+        queryClient.invalidateQueries({ queryKey: PROJECT_KEYS.list(boardId) }).catch(() => {});
       }
     }
   });
@@ -54,9 +54,11 @@ export const useUpdateProject = () => {
       const boardId =
         typeof updatedProject.board === "string" ? updatedProject.board : updatedProject.board?._id;
       if (boardId) {
-        queryClient.invalidateQueries({ queryKey: PROJECT_KEYS.list(boardId) });
+        queryClient.invalidateQueries({ queryKey: PROJECT_KEYS.list(boardId) }).catch(() => {});
       }
-      queryClient.invalidateQueries({ queryKey: PROJECT_KEYS.detail(updatedProject._id) });
+      queryClient
+        .invalidateQueries({ queryKey: PROJECT_KEYS.detail(updatedProject._id) })
+        .catch(() => {});
     }
   });
 };
@@ -70,7 +72,7 @@ export const useDeleteProject = () => {
     },
     onSuccess: ({ boardId }, { id }) => {
       if (boardId) {
-        queryClient.invalidateQueries({ queryKey: PROJECT_KEYS.list(boardId) });
+        queryClient.invalidateQueries({ queryKey: PROJECT_KEYS.list(boardId) }).catch(() => {});
       }
       queryClient.removeQueries({ queryKey: PROJECT_KEYS.detail(id) });
     }

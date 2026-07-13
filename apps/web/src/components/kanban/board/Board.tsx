@@ -54,16 +54,19 @@ function BoardContent() {
     if (!currentBoardId || activeProject || activeTask) {
       return;
     }
-    const id = setInterval(async () => {
-      await fetchProjects(currentBoardId, true);
-      // Notify if project structure changed. Exclude embedded tasks: columns
-      // poll their own tasks and toast for those, so counting task changes here
-      // too would fire a duplicate sync toast.
-      const currentProjects = useWorkspaceStore.getState().projects;
-      compareAndNotify(
-        "projects",
-        currentProjects.map(({ tasks: _tasks, ...rest }) => rest)
-      );
+    const id = setInterval(() => {
+      const poll = async () => {
+        await fetchProjects(currentBoardId, true);
+        // Notify if project structure changed. Exclude embedded tasks: columns
+        // poll their own tasks and toast for those, so counting task changes here
+        // too would fire a duplicate sync toast.
+        const currentProjects = useWorkspaceStore.getState().projects;
+        compareAndNotify(
+          "projects",
+          currentProjects.map(({ tasks: _tasks, ...rest }) => rest)
+        );
+      };
+      poll().catch(() => {});
     }, 5000);
     return () => {
       clearInterval(id);
@@ -101,7 +104,9 @@ function BoardContent() {
         }}
         onDragStart={onDragStart}
         onDragOver={onDragOver}
-        onDragEnd={onDragEnd}
+        onDragEnd={(event) => {
+          onDragEnd(event).catch(() => {});
+        }}
         onDragCancel={onDragCancel}
       >
         <div className="mb-4 flex flex-col items-start justify-between gap-2 sm:flex-row sm:items-center">

@@ -22,7 +22,9 @@ if (typeof process !== "undefined" && !process.env.VERCEL) {
     } catch (error) {
       console.warn("Failed to load .env file:", error);
     }
-  })();
+  })().catch((error: unknown) => {
+    console.warn("Failed to load .env file:", error);
+  });
 }
 
 // Get environment variables with defaults

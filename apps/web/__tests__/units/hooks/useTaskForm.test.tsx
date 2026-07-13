@@ -2,7 +2,8 @@ import { act, renderHook, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { useTaskForm } from "@/hooks/useTaskForm";
-import { TaskStatus, User } from "@/types/dbInterface";
+import { TaskStatus } from "@/types/dbInterface";
+import { User } from "@/types/userApi";
 
 // Mock the userApi
 vi.mock("@/lib/api/userApi", () => ({
@@ -25,15 +26,15 @@ describe("useTaskForm", () => {
       _id: "user-1",
       name: "John Doe",
       email: "john@example.com",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      createdAt: new Date(),
+      updatedAt: new Date()
     },
     {
       _id: "user-2",
       name: "Jane Smith",
       email: "jane@example.com",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      createdAt: new Date(),
+      updatedAt: new Date()
     }
   ];
 
@@ -345,7 +346,7 @@ describe("useTaskForm", () => {
     };
 
     act(() => {
-      result.current.handleSubmit(values);
+      result.current.handleSubmit(values).catch(() => {});
     });
 
     await waitFor(() => {

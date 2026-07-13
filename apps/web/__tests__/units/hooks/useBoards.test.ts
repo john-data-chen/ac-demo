@@ -230,7 +230,7 @@ describe("useBoards", () => {
   it("should provide refresh function", async () => {
     const { useBoards: useApiBoards } = await import("@/lib/api/boards/queries");
 
-    const mockRefetch = vi.fn();
+    const mockRefetch = vi.fn().mockResolvedValue(undefined);
 
     vi.mocked(useApiBoards).mockReturnValue({
       data: undefined,
@@ -241,7 +241,7 @@ describe("useBoards", () => {
 
     const { result } = renderHook(() => useBoards());
 
-    result.current.refresh();
+    result.current.refresh().catch(() => {});
 
     expect(mockRefetch).toHaveBeenCalled();
   });

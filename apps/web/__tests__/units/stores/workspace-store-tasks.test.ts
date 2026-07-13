@@ -302,7 +302,7 @@ describe("workspace-store - Task actions", () => {
         projects: [mockProject]
       });
 
-      vi.mocked(taskApi.deleteTask).mockResolvedValue(undefined);
+      vi.mocked(taskApi.deleteTask).mockResolvedValue(null);
       vi.mocked(projectApi.getProjects).mockResolvedValue([{ ...mockProject, tasks: [] }]);
 
       const store = useWorkspaceStore.getState();

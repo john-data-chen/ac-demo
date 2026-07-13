@@ -36,7 +36,7 @@ export default function NewTaskScreen() {
       return;
     }
 
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
     // Mark to skip sync notification since this is a local change
     const taskQueryKey = JSON.stringify(["tasks", "list", { project: projectId }]);
     markSkipNext(taskQueryKey);
@@ -119,7 +119,7 @@ export default function NewTaskScreen() {
               <Pressable
                 key={s}
                 onPress={() => {
-                  Haptics.selectionAsync();
+                  Haptics.selectionAsync().catch(() => {});
                   setStatus(s as TaskStatus);
                 }}
                 className={`flex-1 items-center rounded-lg border p-3 ${

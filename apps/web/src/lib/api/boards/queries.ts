@@ -39,13 +39,18 @@ export const useCreateBoard = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: boardApi.createBoard,
-    onMutate: () =>{  markSkipNext("boards"); },
+    mutationFn: async (input: Parameters<typeof boardApi.createBoard>[0]) =>
+      boardApi.createBoard(input),
+    onMutate: () => {
+      markSkipNext("boards");
+    },
     onSuccess: () => {
       // Invalidate the boards list query to refetch
-      queryClient.invalidateQueries({
-        queryKey: BOARD_KEYS.list()
-      });
+      queryClient
+        .invalidateQueries({
+          queryKey: BOARD_KEYS.list()
+        })
+        .catch(() => {});
     }
   });
 };
@@ -59,15 +64,15 @@ export const useUpdateBoard = () => {
       ...updates
     }: { id: string } & Parameters<typeof boardApi.updateBoard>[1]) =>
       boardApi.updateBoard(id, updates),
-    onMutate: () =>{  markSkipNext("boards"); },
+    onMutate: () => {
+      markSkipNext("boards");
+    },
     onSuccess: (updatedBoard) => {
       // Invalidate both the list and the specific board
-      queryClient.invalidateQueries({
-        queryKey: BOARD_KEYS.list()
-      });
-      queryClient.invalidateQueries({
-        queryKey: BOARD_KEYS.detail(updatedBoard._id)
-      });
+      queryClient.invalidateQueries({ queryKey: BOARD_KEYS.list() }).catch(() => {});
+      queryClient
+        .invalidateQueries({ queryKey: BOARD_KEYS.detail(updatedBoard._id) })
+        .catch(() => {});
     }
   });
 };
@@ -76,13 +81,13 @@ export const useDeleteBoard = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: boardApi.deleteBoard,
-    onMutate: () =>{  markSkipNext("boards"); },
+    mutationFn: async (id: string) => boardApi.deleteBoard(id),
+    onMutate: () => {
+      markSkipNext("boards");
+    },
     onSuccess: (_, boardId) => {
       // Invalidate the boards list
-      queryClient.invalidateQueries({
-        queryKey: BOARD_KEYS.list()
-      });
+      queryClient.invalidateQueries({ queryKey: BOARD_KEYS.list() }).catch(() => {});
       // Remove the specific board from the cache
       queryClient.removeQueries({
         queryKey: BOARD_KEYS.detail(boardId)
@@ -99,12 +104,10 @@ export const useAddBoardMember = () => {
       boardApi.addBoardMember(boardId, memberId),
     onSuccess: (updatedBoard) => {
       // Invalidate the board data
-      queryClient.invalidateQueries({
-        queryKey: BOARD_KEYS.detail(updatedBoard._id)
-      });
-      queryClient.invalidateQueries({
-        queryKey: BOARD_KEYS.list()
-      });
+      queryClient
+        .invalidateQueries({ queryKey: BOARD_KEYS.detail(updatedBoard._id) })
+        .catch(() => {});
+      queryClient.invalidateQueries({ queryKey: BOARD_KEYS.list() }).catch(() => {});
     }
   });
 };

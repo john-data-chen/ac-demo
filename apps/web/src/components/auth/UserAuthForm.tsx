@@ -54,7 +54,11 @@ export default function UserAuthForm() {
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(onSubmit)}
+        onSubmit={(e) => {
+          form
+            .handleSubmit(onSubmit)(e)
+            .catch(() => {});
+        }}
         className="w-full space-y-2"
         aria-label="Sign in form"
         data-testid="auth-form"

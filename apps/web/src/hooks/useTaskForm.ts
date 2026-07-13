@@ -9,8 +9,9 @@ import { z } from "zod";
 import { SEARCH_DEBOUNCE_DELAY_MS } from "@/constants/common";
 import { useDebounce } from "@/hooks/useDebounce";
 import { userApi } from "@/lib/api/userApi";
-import { TaskStatus, User } from "@/types/dbInterface";
+import { TaskStatus } from "@/types/dbInterface";
 import { TaskFormSchema } from "@/types/taskForm";
+import { User } from "@/types/userApi";
 
 interface UseTaskFormProps {
   // `assignee` may arrive as a bare user id (string) which the hook resolves to a full
@@ -90,7 +91,7 @@ export const useTaskForm = ({ defaultValues, onSubmit }: UseTaskFormProps) => {
       }
     };
 
-    fetchUsers();
+    fetchUsers().catch(() => {});
   }, [assignOpen, debouncedSearchQuery]);
 
   // Load initial users when the component mounts
@@ -99,12 +100,12 @@ export const useTaskForm = ({ defaultValues, onSubmit }: UseTaskFormProps) => {
       const initialUsers = await searchUsersLocal();
       setUsers(initialUsers);
     };
-    loadInitialUsers();
+    loadInitialUsers().catch(() => {});
   }, []);
 
   // Load assignee data when defaultValues changes
   useEffect(() => {
-    const loadAssigneeData = async () => {
+    const loadAssigneeData = () => {
       // If we already have assignee data in the expected format, use it directly
       if (
         defaultValues?.assignee &&
@@ -154,7 +155,7 @@ export const useTaskForm = ({ defaultValues, onSubmit }: UseTaskFormProps) => {
         }
       };
 
-      fetchUser();
+      fetchUser().catch(() => {});
     };
 
     loadAssigneeData();
@@ -172,7 +173,8 @@ export const useTaskForm = ({ defaultValues, onSubmit }: UseTaskFormProps) => {
       };
       await onSubmit(submitData);
     } catch (error) {
-      toast.error(`Failed to submit task: ${error}`);
+      const message = error instanceof Error ? error.message : String(error);
+      toast.error(`Failed to submit task: ${message}`);
     } finally {
       setIsSubmitting(false);
     }

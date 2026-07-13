@@ -73,9 +73,9 @@ export const useCreateTask = () => {
     },
     onSuccess: (variables) => {
       // Invalidate the tasks list query to refetch
-      queryClient.invalidateQueries({
-        queryKey: TASK_KEYS.list({ project: variables.project })
-      });
+      queryClient
+        .invalidateQueries({ queryKey: TASK_KEYS.list({ project: variables.project }) })
+        .catch(() => {});
 
       // Also invalidate the assignee's tasks if applicable
       let assigneeId: string | undefined;
@@ -85,9 +85,9 @@ export const useCreateTask = () => {
       }
 
       if (assigneeId) {
-        queryClient.invalidateQueries({
-          queryKey: TASK_KEYS.list({ assignee: assigneeId })
-        });
+        queryClient
+          .invalidateQueries({ queryKey: TASK_KEYS.list({ assignee: assigneeId }) })
+          .catch(() => {});
       }
     }
   });
@@ -262,7 +262,7 @@ export const useUpdateTask = () => {
           queryKey: TASK_KEYS.lists(),
           refetchType: "active"
         })
-      ]);
+      ]).catch(() => {});
     }
   });
 };
@@ -342,21 +342,27 @@ export const useDeleteTask = () => {
     onSettled: (data, error, taskId, context) => {
       // If we have the deleted task info, invalidate queries for that specific project
       if (context?.taskToDelete?.project) {
-        queryClient.invalidateQueries({
-          queryKey: TASK_KEYS.list({ project: context.taskToDelete.project }),
-          refetchType: "active"
-        });
+        queryClient
+          .invalidateQueries({
+            queryKey: TASK_KEYS.list({ project: context.taskToDelete.project }),
+            refetchType: "active"
+          })
+          .catch(() => {});
       }
 
       // Also invalidate general task lists and the specific task
-      queryClient.invalidateQueries({
-        queryKey: TASK_KEYS.lists(),
-        refetchType: "active"
-      });
-      queryClient.invalidateQueries({
-        queryKey: TASK_KEYS.detail(taskId),
-        refetchType: "all"
-      });
+      queryClient
+        .invalidateQueries({
+          queryKey: TASK_KEYS.lists(),
+          refetchType: "active"
+        })
+        .catch(() => {});
+      queryClient
+        .invalidateQueries({
+          queryKey: TASK_KEYS.detail(taskId),
+          refetchType: "all"
+        })
+        .catch(() => {});
     }
   });
 };

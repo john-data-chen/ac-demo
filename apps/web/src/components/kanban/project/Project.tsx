@@ -125,18 +125,21 @@ function BoardProjectComponent({
   }, [project?._id, fetchTasksByProject, compareAndNotify]);
 
   // Handle task updates from child components
-  const handleTaskUpdate = useCallback(async () => {
-    try {
-      const fetchedTasks = await fetchTasksByProject(project._id);
-      setTasks(fetchedTasks);
-    } catch (error) {
-      console.error("Error updating tasks:", error);
-    }
+  const handleTaskUpdate = useCallback(() => {
+    const refreshTasks = async () => {
+      try {
+        const fetchedTasks = await fetchTasksByProject(project._id);
+        setTasks(fetchedTasks);
+      } catch (error) {
+        console.error("Error updating tasks:", error);
+      }
+    };
+    refreshTasks().catch(() => {});
   }, [project._id, fetchTasksByProject]);
 
   // Fetch tasks when the project changes
   useEffect(() => {
-    loadTasks();
+    loadTasks().catch(() => {});
   }, [loadTasks]);
 
   // ponytail: 5s polling = near-real-time sync; swap for WebSocket/SSE if
@@ -146,7 +149,9 @@ function BoardProjectComponent({
     if (isDragActive) {
       return;
     }
-    const id = setInterval(loadTasks, 5000);
+    const id = setInterval(() => {
+      loadTasks().catch(() => {});
+    }, 5000);
     return () => {
       clearInterval(id);
     };

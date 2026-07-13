@@ -300,7 +300,7 @@ describe("BoardOverview", () => {
 
   it("should handle visibility change", async () => {
     const { useBoards } = await import("@/hooks/useBoards");
-    const mockRefresh = vi.fn();
+    const mockRefresh = vi.fn().mockResolvedValue(undefined);
 
     vi.mocked(useBoards).mockReturnValue({
       myBoards: mockMyBoards,

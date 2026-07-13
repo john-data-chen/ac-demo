@@ -26,10 +26,10 @@ Load matching skill **before writing code**.
 
 ### API (check `ai-docs/api-context.md`)
 
-| Condition                           | Skill                 |
-| :---------------------------------- | :-------------------- |
-| FastAPI related tasks               | `fastapi-python`      |
-| Database, Schema, ROM related tasks | `sqlalchemy-postgres` |
+| Condition                                                  | Skill                 |
+| :--------------------------------------------------------- | :-------------------- |
+| FastAPI related tasks                                      | `fastapi-python`      |
+| SQLAlchemy, Schema, ORM, Database (Postgres) related tasks | `sqlalchemy-postgres` |
 
 ### Mobile (check `ai-docs/mobile-context.md`)
 
@@ -37,7 +37,6 @@ Load matching skill **before writing code**.
 | :------------------------------------------------------------------------ | :--------------------- |
 | Expo screens, navigation, animations, native tabs, styling, layout        | `building-native-ui`   |
 | Server-side API endpoints in Expo Router, EAS Hosting, Cloudflare Workers | `expo-api-routes`      |
-| Custom dev client builds, TestFlight distribution, native modules         | `expo-dev-client`      |
 | Tailwind CSS / NativeWind setup in Expo                                   | `expo-tailwind-setup`  |
 | Network requests, API calls, fetch, caching, offline, auth tokens         | `native-data-fetching` |
 | Upgrading Expo SDK, dependency conflicts, New Architecture migration      | `upgrading-expo`       |

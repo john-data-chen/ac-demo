@@ -50,11 +50,15 @@ export const useCreateTask = () => {
   return useMutation({
     mutationFn: taskApi.createTask,
     onSuccess: (newTask) => {
-      queryClient.invalidateQueries({ queryKey: TASK_KEYS.list({ project: newTask.project }) });
+      queryClient
+        .invalidateQueries({ queryKey: TASK_KEYS.list({ project: newTask.project }) })
+        .catch(() => {});
       if (newTask.assignee) {
         const assigneeId =
           typeof newTask.assignee === "string" ? newTask.assignee : newTask.assignee._id;
-        queryClient.invalidateQueries({ queryKey: TASK_KEYS.list({ assignee: assigneeId }) });
+        queryClient
+          .invalidateQueries({ queryKey: TASK_KEYS.list({ assignee: assigneeId }) })
+          .catch(() => {});
       }
     }
   });
@@ -91,8 +95,12 @@ export const useUpdateTask = () => {
       });
     },
     onSuccess: (updatedTask) => {
-      queryClient.invalidateQueries({ queryKey: TASK_KEYS.detail(updatedTask._id) });
-      queryClient.invalidateQueries({ queryKey: TASK_KEYS.list({ project: updatedTask.project }) });
+      queryClient
+        .invalidateQueries({ queryKey: TASK_KEYS.detail(updatedTask._id) })
+        .catch(() => {});
+      queryClient
+        .invalidateQueries({ queryKey: TASK_KEYS.list({ project: updatedTask.project }) })
+        .catch(() => {});
     },
     onError: (err) => {
       if ((err as Error & { status?: number }).status === 409) {
@@ -100,7 +108,7 @@ export const useUpdateTask = () => {
           "Task changed",
           "Someone else just updated this task. Showing the latest version."
         );
-        queryClient.invalidateQueries({ queryKey: TASK_KEYS.all });
+        queryClient.invalidateQueries({ queryKey: TASK_KEYS.all }).catch(() => {});
       }
     }
   });
@@ -111,7 +119,7 @@ export const useDeleteTask = () => {
   return useMutation({
     mutationFn: taskApi.deleteTask,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: TASK_KEYS.lists() });
+      queryClient.invalidateQueries({ queryKey: TASK_KEYS.lists() }).catch(() => {});
     }
   });
 };
@@ -129,8 +137,10 @@ export const useMoveTask = () => {
       orderInProject: number;
     }) => taskApi.moveTask(taskId, projectId, orderInProject),
     onSuccess: (updatedTask) => {
-      queryClient.invalidateQueries({ queryKey: TASK_KEYS.lists() });
-      queryClient.invalidateQueries({ queryKey: TASK_KEYS.detail(updatedTask._id) });
+      queryClient.invalidateQueries({ queryKey: TASK_KEYS.lists() }).catch(() => {});
+      queryClient
+        .invalidateQueries({ queryKey: TASK_KEYS.detail(updatedTask._id) })
+        .catch(() => {});
     }
   });
 };

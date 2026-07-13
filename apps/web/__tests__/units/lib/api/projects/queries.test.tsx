@@ -187,7 +187,7 @@ describe("Project Query Hooks", () => {
       const invalidateSpy = vi.spyOn(queryClient, "invalidateQueries");
 
       await act(async () => {
-        await result.current.mutateAsync({ id: "1", title: "Updated Project" } as any);
+        await result.current.mutateAsync({ id: "1", title: "Updated Project" });
       });
 
       await waitFor(() => {

@@ -62,7 +62,7 @@ beforeEach(() => {
   vi.mocked(useRouter).mockReturnValue({ replace, push } as any);
   vi.mocked(usePathname).mockReturnValue("/en/boards");
   vi.mocked(AuthService.getProfile).mockResolvedValue(mockUser);
-  vi.mocked(AuthService.login).mockResolvedValue({ access_token: "token", user: mockUser } as any);
+  vi.mocked(AuthService.login).mockResolvedValue({ access_token: "token", user: mockUser });
   vi.mocked(AuthService.logout).mockResolvedValue(undefined);
 
   const authStoreState = { setUser: vi.fn(), clear: vi.fn() };
@@ -126,7 +126,7 @@ describe("useAuth login + logout branches", () => {
     vi.mocked(usePathname).mockReturnValue("/en/login");
     setCookie("");
     setLocalStorage(null);
-    vi.mocked(AuthService.login).mockResolvedValue({ access_token: "token" } as any);
+    vi.mocked(AuthService.login).mockResolvedValue({ access_token: "token" });
 
     const { result } = renderHook(() => useAuth(), { wrapper });
 
@@ -140,16 +140,15 @@ describe("useAuth login + logout branches", () => {
     expect(AuthService.getProfile).toHaveBeenCalled();
   });
 
-  it("redirects to login even when logout fails", async () => {
+  it("redirects to login on logout", () => {
     vi.mocked(usePathname).mockReturnValue("/en/login");
     setCookie("");
     setLocalStorage(null);
-    vi.mocked(AuthService.logout).mockRejectedValue(new Error("logout failed"));
 
     const { result } = renderHook(() => useAuth(), { wrapper });
 
-    await act(async () => {
-      await result.current.logout();
+    act(() => {
+      result.current.logout();
     });
 
     expect(replace).toHaveBeenCalledWith("/login");

@@ -44,16 +44,15 @@ export const useCreateProject = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: projectApi.createProject,
+    mutationFn: async (input: Parameters<typeof projectApi.createProject>[0]) =>
+      projectApi.createProject(input),
     onSuccess: (newProject) => {
       // Invalidate the projects list for the specific board
       const boardId =
         typeof newProject.board === "string" ? newProject.board : newProject.board?._id;
 
       if (boardId) {
-        queryClient.invalidateQueries({
-          queryKey: PROJECT_KEYS.list(boardId)
-        });
+        queryClient.invalidateQueries({ queryKey: PROJECT_KEYS.list(boardId) }).catch(() => {});
       }
     }
   });
@@ -83,14 +82,12 @@ export const useUpdateProject = () => {
         typeof updatedProject.board === "string" ? updatedProject.board : updatedProject.board?._id;
 
       if (boardId) {
-        queryClient.invalidateQueries({
-          queryKey: PROJECT_KEYS.list(boardId)
-        });
+        queryClient.invalidateQueries({ queryKey: PROJECT_KEYS.list(boardId) }).catch(() => {});
       }
 
-      queryClient.invalidateQueries({
-        queryKey: PROJECT_KEYS.detail(updatedProject._id)
-      });
+      queryClient
+        .invalidateQueries({ queryKey: PROJECT_KEYS.detail(updatedProject._id) })
+        .catch(() => {});
     }
   });
 };
@@ -99,13 +96,13 @@ export const useDeleteProject = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: projectApi.deleteProject,
+    mutationFn: async (id: string) => projectApi.deleteProject(id),
     onSuccess: (_, projectId, context: { boardId?: string } | undefined) => {
       // Invalidate the projects list for the board if we have the boardId
       if (context?.boardId) {
-        queryClient.invalidateQueries({
-          queryKey: PROJECT_KEYS.list(context.boardId)
-        });
+        queryClient
+          .invalidateQueries({ queryKey: PROJECT_KEYS.list(context.boardId) })
+          .catch(() => {});
       }
       // Remove the specific project from the cache
       queryClient.removeQueries({

@@ -29,12 +29,15 @@ export function useAuth() {
 
   const loginMutation = useMutation({
     mutationFn: async (email: string) => authService.login(email),
-    onSuccess: async (data) => {
-      const user = data.user ?? (await authService.getProfile());
-      setSession({ user, accessToken: data.access_token });
-      setUser(user);
-      queryClient.invalidateQueries({ queryKey: AUTH_KEYS.session });
-      router.replace("/(tabs)");
+    onSuccess: (data) => {
+      const applySession = async () => {
+        const user = data.user ?? (await authService.getProfile());
+        setSession({ user, accessToken: data.access_token });
+        setUser(user);
+        await queryClient.invalidateQueries({ queryKey: AUTH_KEYS.session });
+        router.replace("/(tabs)");
+      };
+      applySession().catch(() => {});
     }
   });
 

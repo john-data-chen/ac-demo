@@ -28,28 +28,30 @@ export default function SettingsScreen() {
   const [langIndex, setLangIndex] = useState(i18n.language === "de" ? 1 : 0);
 
   useEffect(() => {
-    loadThemePreference().then((pref) => {
-      setThemeIndex(THEME_OPTIONS.indexOf(pref));
-    });
+    loadThemePreference()
+      .then((pref) => {
+        setThemeIndex(THEME_OPTIONS.indexOf(pref));
+      })
+      .catch(() => {});
   }, []);
 
   const handleThemeChange = useCallback((index: number) => {
     const pref = THEME_OPTIONS[index];
     setThemeIndex(index);
     applyThemePreference(pref);
-    saveThemePreference(pref);
+    saveThemePreference(pref).catch(() => {});
     if (process.env.EXPO_OS === "ios") {
-      Haptics.selectionAsync();
+      Haptics.selectionAsync().catch(() => {});
     }
   }, []);
 
   const handleLanguageChange = useCallback((index: number) => {
     const lang = LANGUAGE_CODES[index];
     setLangIndex(index);
-    i18n.changeLanguage(lang);
-    saveLanguagePreference(lang);
+    i18n.changeLanguage(lang).catch(() => {});
+    saveLanguagePreference(lang).catch(() => {});
     if (process.env.EXPO_OS === "ios") {
-      Haptics.selectionAsync();
+      Haptics.selectionAsync().catch(() => {});
     }
   }, []);
 
@@ -86,7 +88,12 @@ export default function SettingsScreen() {
           <View className="h-px bg-border" />
 
           {/* Logout Button */}
-          <Pressable onPress={logout} className="items-center rounded-lg py-2.5">
+          <Pressable
+            onPress={() => {
+              logout().catch(() => {});
+            }}
+            className="items-center rounded-lg py-2.5"
+          >
             <Text className="text-base font-medium text-destructive">{t("user.logOut")}</Text>
           </Pressable>
         </View>

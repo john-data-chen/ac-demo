@@ -22,7 +22,7 @@ export default function BoardPage() {
       return;
     }
     setCurrentBoardId(boardId);
-    fetchProjects(boardId);
+    fetchProjects(boardId).catch(() => {});
   }, [boardId, setCurrentBoardId, fetchProjects]);
 
   return (

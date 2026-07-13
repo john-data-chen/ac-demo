@@ -56,7 +56,7 @@ vi.mock("react-hook-form", async (importOriginal) => {
       control: {},
       handleSubmit: vi.fn((cb) => (e: any) => {
         e.preventDefault();
-        cb({ email: "test@example.com" });
+        return cb({ email: "test@example.com" });
       }),
       formState: { errors: {} },
       register: vi.fn(),

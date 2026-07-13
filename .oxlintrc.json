@@ -1,12 +1,23 @@
 {
-  "plugins": ["react", "react-perf", "nextjs", "typescript", "unicorn", "oxc", "jsx-a11y"],
+  "plugins": [
+    "react",
+    "react-perf",
+    "nextjs",
+    "typescript",
+    "unicorn",
+    "oxc",
+    "jsx-a11y"
+  ],
   "rules": {
     "react/jsx-no-undef": "warn",
     "react/self-closing-comp": "warn",
     "react/jsx-no-useless-fragment": "warn",
     "react/no-unescaped-entities": "warn",
     "react/no-unknown-property": "warn",
-    "react/jsx-curly-brace-presence": ["warn", "never"],
+    "react/jsx-curly-brace-presence": [
+      "warn",
+      "never"
+    ],
     "no-unused-vars": "warn",
     "no-debugger": "off",
     "no-var": "warn",
@@ -19,13 +30,23 @@
         "null": "ignore"
       }
     ],
-    "no-restricted-globals": ["warn", "isFinite", "isNaN"],
+    "no-restricted-globals": [
+      "warn",
+      "isFinite",
+      "isNaN"
+    ],
     "no-return-assign": "warn",
     "curly": "warn",
     "prefer-rest-params": "warn",
     "no-else-return": "warn",
-    "max-depth": ["warn", 5],
-    "max-lines": ["warn", 500],
+    "max-depth": [
+      "warn",
+      5
+    ],
+    "max-lines": [
+      "warn",
+      500
+    ],
     "prefer-object-spread": "warn",
     "prefer-object-has-own": "warn",
     "prefer-promise-reject-errors": "warn",
@@ -33,7 +54,10 @@
     "typescript/no-require-imports": "warn",
     "typescript/no-non-null-asserted-nullish-coalescing": "warn",
     "typescript/adjacent-overload-signatures": "warn",
-    "typescript/consistent-type-definitions": ["warn", "interface"],
+    "typescript/consistent-type-definitions": [
+      "warn",
+      "interface"
+    ],
     "typescript/no-empty-interface": "warn",
     "typescript/no-inferrable-types": "warn",
     "typescript/prefer-for-of": "warn",
@@ -86,5 +110,22 @@
     "dist/**/*",
     "../../apps/api/database/mongodb/**/*",
     "../../apps/api/database/docker-compose.yml"
+  ],
+  "options": {
+    "typeAware": true,
+    "typeCheck": true
+  },
+  "overrides": [
+    {
+      "files": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx"
+      ],
+      "rules": {
+        "typescript/unbound-method": "off",
+        "typescript/require-await": "off"
+      }
+    }
   ]
 }

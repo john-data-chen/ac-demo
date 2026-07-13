@@ -38,8 +38,8 @@ describe("user queries", () => {
         _id: "user-1",
         email: "test@example.com",
         name: "Test User",
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
+        createdAt: new Date(),
+        updatedAt: new Date()
       };
 
       vi.mocked(userApi.getUserById).mockResolvedValue(mockUser);
@@ -89,8 +89,8 @@ describe("user queries", () => {
         _id: userId,
         email: "test@example.com",
         name: "Test User",
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
+        createdAt: new Date(),
+        updatedAt: new Date()
       };
 
       vi.mocked(userApi.getUserById).mockResolvedValue(mockUser);
@@ -113,15 +113,15 @@ describe("user queries", () => {
           _id: "user-1",
           email: "alice@example.com",
           name: "Alice",
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
+          createdAt: new Date(),
+          updatedAt: new Date()
         },
         {
           _id: "user-2",
           email: "bob@example.com",
           name: "Bob",
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
+          createdAt: new Date(),
+          updatedAt: new Date()
         }
       ];
 
@@ -165,8 +165,8 @@ describe("user queries", () => {
           _id: "user-1",
           email: "test@example.com",
           name: "Test User",
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
+          createdAt: new Date(),
+          updatedAt: new Date()
         }
       ];
 
@@ -195,8 +195,8 @@ describe("user queries", () => {
           _id: "user-1",
           email: "alice@example.com",
           name: "Alice",
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
+          createdAt: new Date(),
+          updatedAt: new Date()
         }
       ];
       const mockUsers2: User[] = [
@@ -204,8 +204,8 @@ describe("user queries", () => {
           _id: "user-2",
           email: "bob@example.com",
           name: "Bob",
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
+          createdAt: new Date(),
+          updatedAt: new Date()
         }
       ];
 

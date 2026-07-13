@@ -32,11 +32,13 @@ const StatusBadge = ({ status }: { status: TaskStatus }) => {
   let label = t("kanban.task.statusTodo") || "Todo";
 
   switch (status) {
-    case "IN_PROGRESS":
+    case TaskStatus.TODO:
+      break;
+    case TaskStatus.IN_PROGRESS:
       bgClass = "bg-blue-500";
       label = t("kanban.task.statusInProgress") || "In Progress";
       break;
-    case "DONE":
+    case TaskStatus.DONE:
       bgClass = "bg-green-500";
       label = t("kanban.task.statusDone") || "Done";
       break;
@@ -61,7 +63,7 @@ export function TaskCard({ task, onMoveToProject }: TaskCardProps) {
     const safeIndex = currentIndex < 0 ? 0 : currentIndex;
     const nextStatus = STATUS_ORDER[(safeIndex + 1) % STATUS_ORDER.length];
 
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
     // Mark to skip sync notification since this is a local change
     const taskQueryKey = JSON.stringify(["tasks", "list", { project: task.project }]);
     markSkipNext(taskQueryKey);
@@ -69,7 +71,7 @@ export function TaskCard({ task, onMoveToProject }: TaskCardProps) {
   }, [task._id, task.status, task.project, updateTaskMutation]);
 
   const handleMoveTo = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
     if (onMoveToProject) {
       onMoveToProject();
     }
@@ -86,7 +88,7 @@ export function TaskCard({ task, onMoveToProject }: TaskCardProps) {
           text: t("common.delete") || "Delete",
           style: "destructive",
           onPress: () => {
-            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
             // Mark to skip sync notification since this is a local change
             const taskQueryKey = JSON.stringify(["tasks", "list", { project: task.project }]);
             markSkipNext(taskQueryKey);

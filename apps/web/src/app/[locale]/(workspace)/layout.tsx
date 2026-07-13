@@ -7,7 +7,7 @@ interface AppLayoutProps {
   params: Promise<{ locale: string }>;
 }
 
-export default async function AppLayout({ children }: Readonly<AppLayoutProps>) {
+export default function AppLayout({ children }: Readonly<AppLayoutProps>) {
   return (
     <Suspense fallback=<WorkspaceLoadingSkeleton />>
       <RootWrapper>{children}</RootWrapper>

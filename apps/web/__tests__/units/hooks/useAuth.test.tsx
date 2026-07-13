@@ -196,7 +196,7 @@ describe("useAuth", () => {
       expect(result.current.isAuthenticated).toBe(true);
     });
 
-    await result.current.logout();
+    result.current.logout();
 
     expect(AuthService.logout).toHaveBeenCalled();
   });
@@ -309,7 +309,7 @@ describe("useAuthForm", () => {
       forward: vi.fn()
     };
     const { useRouter } = await import("@/i18n/navigation");
-    vi.mocked(useRouter).mockReturnValue(mockRouter as any);
+    vi.mocked(useRouter).mockReturnValue(mockRouter);
 
     const { result } = renderHook(() => useAuthForm(), { wrapper });
 

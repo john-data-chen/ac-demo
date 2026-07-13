@@ -38,7 +38,7 @@ export default function ProjectFormScreen() {
       return;
     }
 
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
 
     // Mark to skip sync notification since this is a local change
     const projectQueryKey = JSON.stringify(["projects", "list", { boardId }]);

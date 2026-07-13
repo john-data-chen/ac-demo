@@ -60,7 +60,7 @@ export default function TaskDetailScreen() {
       return;
     }
 
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
     // Mark to skip sync notification since this is a local change
     const taskQueryKey = JSON.stringify(["tasks", "list", { project: task?.project }]);
     markSkipNext(taskQueryKey);
@@ -99,7 +99,7 @@ export default function TaskDetailScreen() {
           text: t("common.delete") || "Delete",
           style: "destructive",
           onPress: () => {
-            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
             // Mark to skip sync notification since this is a local change
             const taskQueryKey = JSON.stringify(["tasks", "list", { project: task?.project }]);
             markSkipNext(taskQueryKey);
@@ -183,7 +183,7 @@ export default function TaskDetailScreen() {
               <Pressable
                 key={s}
                 onPress={() => {
-                  Haptics.selectionAsync();
+                  Haptics.selectionAsync().catch(() => {});
                   setStatus(s as TaskStatus);
                 }}
                 className={`flex-1 items-center rounded-lg border p-3 ${

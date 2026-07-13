@@ -41,7 +41,14 @@ export function BoardForm({ defaultValues, onSubmit, children }: BoardFormProps)
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
+      <form
+        onSubmit={(e) => {
+          form
+            .handleSubmit(onSubmit)(e)
+            .catch(() => {});
+        }}
+        className="space-y-3"
+      >
         <FormField
           control={form.control}
           name="title"

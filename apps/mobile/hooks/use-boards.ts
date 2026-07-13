@@ -70,7 +70,7 @@ export const useCreateBoard = () => {
   return useMutation({
     mutationFn: boardApi.createBoard,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: BOARD_KEYS.list() });
+      queryClient.invalidateQueries({ queryKey: BOARD_KEYS.list() }).catch(() => {});
     }
   });
 };
@@ -81,8 +81,10 @@ export const useUpdateBoard = () => {
     mutationFn: async ({ id, ...updates }: { id: string } & UpdateBoardInput) =>
       boardApi.updateBoard(id, updates),
     onSuccess: (updatedBoard) => {
-      queryClient.invalidateQueries({ queryKey: BOARD_KEYS.list() });
-      queryClient.invalidateQueries({ queryKey: BOARD_KEYS.detail(updatedBoard._id) });
+      queryClient.invalidateQueries({ queryKey: BOARD_KEYS.list() }).catch(() => {});
+      queryClient
+        .invalidateQueries({ queryKey: BOARD_KEYS.detail(updatedBoard._id) })
+        .catch(() => {});
     }
   });
 };
@@ -92,7 +94,7 @@ export const useDeleteBoard = () => {
   return useMutation({
     mutationFn: boardApi.deleteBoard,
     onSuccess: (_, boardId) => {
-      queryClient.invalidateQueries({ queryKey: BOARD_KEYS.list() });
+      queryClient.invalidateQueries({ queryKey: BOARD_KEYS.list() }).catch(() => {});
       queryClient.removeQueries({ queryKey: BOARD_KEYS.detail(boardId) });
     }
   });

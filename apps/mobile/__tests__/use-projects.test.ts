@@ -55,7 +55,7 @@ describe("useCreateProject", () => {
     const { result } = renderHook(() => useCreateProject(), { wrapper: Wrapper });
 
     await act(async () => {
-      result.current.mutate({ title: "New", boardId: "b1" } as any);
+      result.current.mutate({ title: "New", boardId: "b1" });
     });
 
     await waitFor(() => {
@@ -72,7 +72,7 @@ describe("useCreateProject", () => {
     const { result } = renderHook(() => useCreateProject(), { wrapper: Wrapper });
 
     await act(async () => {
-      result.current.mutate({ title: "New", boardId: "b2" } as any);
+      result.current.mutate({ title: "New", boardId: "b2" });
     });
 
     await waitFor(() => {
@@ -89,7 +89,7 @@ describe("useUpdateProject", () => {
     const { result } = renderHook(() => useUpdateProject(), { wrapper: Wrapper });
 
     await act(async () => {
-      result.current.mutate({ id: "p1", title: "Updated" } as any);
+      result.current.mutate({ id: "p1", title: "Updated" });
     });
 
     await waitFor(() => {
@@ -106,7 +106,7 @@ describe("useUpdateProject", () => {
     const { result } = renderHook(() => useUpdateProject(), { wrapper: Wrapper });
 
     await act(async () => {
-      result.current.mutate({ id: "p1", title: "Updated" } as any);
+      result.current.mutate({ id: "p1", title: "Updated" });
     });
 
     await waitFor(() => {
@@ -117,7 +117,7 @@ describe("useUpdateProject", () => {
 
 describe("useDeleteProject", () => {
   it("should delete project with boardId", async () => {
-    vi.mocked(projectApi.deleteProject).mockResolvedValue(undefined as any);
+    vi.mocked(projectApi.deleteProject).mockResolvedValue(undefined);
 
     const { result } = renderHook(() => useDeleteProject(), { wrapper: Wrapper });
 
@@ -133,7 +133,7 @@ describe("useDeleteProject", () => {
   });
 
   it("should delete project without boardId", async () => {
-    vi.mocked(projectApi.deleteProject).mockResolvedValue(undefined as any);
+    vi.mocked(projectApi.deleteProject).mockResolvedValue(undefined);
 
     const { result } = renderHook(() => useDeleteProject(), { wrapper: Wrapper });
 

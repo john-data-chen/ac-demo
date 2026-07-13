@@ -47,7 +47,7 @@ export function MoveTaskSheet({
       (buttonIndex) => {
         if (buttonIndex < availableProjects.length) {
           const targetProject = availableProjects[buttonIndex];
-          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
           onClose();
           // Mark to skip sync notification for both source and dest project lists
           markSkipNext(JSON.stringify(["tasks", "list", { project: currentProjectId }]));
@@ -71,7 +71,7 @@ export function MoveTaskSheet({
   }, [visible, isLoading, availableProjects.length, showActionSheet]);
 
   const handleMove = (targetProjectId: string) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
     onClose();
     // Mark to skip sync notification for both source and dest project lists
     markSkipNext(JSON.stringify(["tasks", "list", { project: currentProjectId }]));

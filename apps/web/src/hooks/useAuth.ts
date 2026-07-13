@@ -98,7 +98,9 @@ export function useAuth() {
       }
     };
 
-    initAuth();
+    initAuth().catch((error: unknown) => {
+      console.error("Failed to initialize auth:", error);
+    });
   }, [checkSession, authPathname]);
 
   // Login mutation
@@ -144,10 +146,10 @@ export function useAuth() {
   });
 
   // Logout function
-  const logout = useCallback(async () => {
+  const logout = useCallback(() => {
     try {
       // Clear the JWT cookie
-      await AuthService.logout();
+      AuthService.logout();
 
       // Clear the local session state
       setSession(null);

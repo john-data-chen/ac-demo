@@ -42,9 +42,11 @@ export default function BoardDetailScreen() {
 
   const handleRefresh = useCallback(() => {
     setIsManualRefresh(true);
-    Promise.all([refetchBoard(), refetchProjects()]).finally(() => {
-      setIsManualRefresh(false);
-    });
+    Promise.all([refetchBoard(), refetchProjects()])
+      .finally(() => {
+        setIsManualRefresh(false);
+      })
+      .catch(() => {});
   }, [refetchBoard, refetchProjects]);
 
   const sortedProjects = useMemo(

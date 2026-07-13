@@ -53,7 +53,7 @@ describe("useTasks", () => {
   });
 
   it("should fetch tasks by assigneeId", async () => {
-    vi.mocked(taskApi.getTasks).mockResolvedValue([] as any);
+    vi.mocked(taskApi.getTasks).mockResolvedValue([]);
 
     const { result } = renderHook(() => useTasks(undefined, "u1"), { wrapper: Wrapper });
 
@@ -171,7 +171,7 @@ describe("useUpdateTask", () => {
 
 describe("useDeleteTask", () => {
   it("should delete task", async () => {
-    vi.mocked(taskApi.deleteTask).mockResolvedValue(undefined as any);
+    vi.mocked(taskApi.deleteTask).mockResolvedValue(undefined);
 
     const { result } = renderHook(() => useDeleteTask(), { wrapper: Wrapper });
 

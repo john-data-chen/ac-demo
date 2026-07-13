@@ -78,9 +78,11 @@ function RootLayoutNav() {
 
   // Restore persisted theme preference on mount
   useEffect(() => {
-    loadThemePreference().then((pref) => {
-      applyThemePreference(pref);
-    });
+    loadThemePreference()
+      .then((pref) => {
+        applyThemePreference(pref);
+      })
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
